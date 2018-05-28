@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.standardized.trigger.OrderTriggerMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.standardized.trigger.OrderTrigger" >
+    <id column="trigger_id" property="triggerId" jdbcType="BIGINT" />
+    <result column="city_id" property="cityId" jdbcType="VARCHAR" />
+    <result column="payout_fee" property="payoutFee" jdbcType="DECIMAL" />
+    <result column="trigger_state" property="triggerState" jdbcType="TINYINT" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="data_state" property="dataState" jdbcType="TINYINT" />
+    <result column="threshold" property="threshold" jdbcType="REAL" />
+    <result column="real_weather_date" property="realWeatherDate" jdbcType="DATE" />
+    <result column="nmc_weather_value" property="nmcWeatherValue" jdbcType="REAL" />
+    <result column="cma_weather_value" property="cmaWeatherValue" jdbcType="REAL" />
+    <result column="inner_order_id" property="innerOrderId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    trigger_id, city_id, payout_fee, trigger_state, gmt_create, description, data_state, 
+    threshold, real_weather_date, nmc_weather_value, cma_weather_value, inner_order_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from order_trigger
+    where trigger_id = #{triggerId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from order_trigger
+    where trigger_id = #{triggerId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.standardized.trigger.OrderTrigger" >
+    insert into order_trigger (trigger_id, city_id, payout_fee, 
+      trigger_state, gmt_create, description, 
+      data_state, threshold, real_weather_date, 
+      nmc_weather_value, cma_weather_value, inner_order_id
+      )
+    values (#{triggerId,jdbcType=BIGINT}, #{cityId,jdbcType=VARCHAR}, #{payoutFee,jdbcType=DECIMAL}, 
+      #{triggerState,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, 
+      #{dataState,jdbcType=TINYINT}, #{threshold,jdbcType=REAL}, #{realWeatherDate,jdbcType=DATE}, 
+      #{nmcWeatherValue,jdbcType=REAL}, #{cmaWeatherValue,jdbcType=REAL}, #{innerOrderId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.standardized.trigger.OrderTrigger" >
+    insert into order_trigger
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="triggerId != null" >
+        trigger_id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="payoutFee != null" >
+        payout_fee,
+      </if>
+      <if test="triggerState != null" >
+        trigger_state,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="dataState != null" >
+        data_state,
+      </if>
+      <if test="threshold != null" >
+        threshold,
+      </if>
+      <if test="realWeatherDate != null" >
+        real_weather_date,
+      </if>
+      <if test="nmcWeatherValue != null" >
+        nmc_weather_value,
+      </if>
+      <if test="cmaWeatherValue != null" >
+        cma_weather_value,
+      </if>
+      <if test="innerOrderId != null" >
+        inner_order_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="triggerId != null" >
+        #{triggerId,jdbcType=BIGINT},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="payoutFee != null" >
+        #{payoutFee,jdbcType=DECIMAL},
+      </if>
+      <if test="triggerState != null" >
+        #{triggerState,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="dataState != null" >
+        #{dataState,jdbcType=TINYINT},
+      </if>
+      <if test="threshold != null" >
+        #{threshold,jdbcType=REAL},
+      </if>
+      <if test="realWeatherDate != null" >
+        #{realWeatherDate,jdbcType=DATE},
+      </if>
+      <if test="nmcWeatherValue != null" >
+        #{nmcWeatherValue,jdbcType=REAL},
+      </if>
+      <if test="cmaWeatherValue != null" >
+        #{cmaWeatherValue,jdbcType=REAL},
+      </if>
+      <if test="innerOrderId != null" >
+        #{innerOrderId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.standardized.trigger.OrderTrigger" >
+    update order_trigger
+    <set >
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="payoutFee != null" >
+        payout_fee = #{payoutFee,jdbcType=DECIMAL},
+      </if>
+      <if test="triggerState != null" >
+        trigger_state = #{triggerState,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="dataState != null" >
+        data_state = #{dataState,jdbcType=TINYINT},
+      </if>
+      <if test="threshold != null" >
+        threshold = #{threshold,jdbcType=REAL},
+      </if>
+      <if test="realWeatherDate != null" >
+        real_weather_date = #{realWeatherDate,jdbcType=DATE},
+      </if>
+      <if test="nmcWeatherValue != null" >
+        nmc_weather_value = #{nmcWeatherValue,jdbcType=REAL},
+      </if>
+      <if test="cmaWeatherValue != null" >
+        cma_weather_value = #{cmaWeatherValue,jdbcType=REAL},
+      </if>
+      <if test="innerOrderId != null" >
+        inner_order_id = #{innerOrderId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where trigger_id = #{triggerId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.standardized.trigger.OrderTrigger" >
+    update order_trigger
+    set city_id = #{cityId,jdbcType=VARCHAR},
+      payout_fee = #{payoutFee,jdbcType=DECIMAL},
+      trigger_state = #{triggerState,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR},
+      data_state = #{dataState,jdbcType=TINYINT},
+      threshold = #{threshold,jdbcType=REAL},
+      real_weather_date = #{realWeatherDate,jdbcType=DATE},
+      nmc_weather_value = #{nmcWeatherValue,jdbcType=REAL},
+      cma_weather_value = #{cmaWeatherValue,jdbcType=REAL},
+      inner_order_id = #{innerOrderId,jdbcType=VARCHAR}
+    where trigger_id = #{triggerId,jdbcType=BIGINT}
+  </update>
+  	<insert id="insertOrderTriggerList" parameterType="java.util.List">
+      <![CDATA[
+        insert into order_trigger (city_id, payout_fee, 
+      trigger_state, gmt_create, description, 
+      data_state, threshold, real_weather_date, 
+      nmc_weather_value, cma_weather_value, inner_order_id
+      )
+    values
+      ]]>
+		<foreach collection="list" item="item" separator=",">   
+	  	<![CDATA[
+	        (#{item.cityId}, #{item.payoutFee}, #{item.triggerState}, #{item.gmtCreate}, #{item.description}, 
+      #{item.dataState}, #{item.threshold}, #{item.realWeatherDate}, 
+      #{item.nmcWeatherValue}, #{item.cmaWeatherValue}, #{item.innerOrderId}
+      )
+	   ]]>
+		</foreach>
+	</insert>
+	<select id="getTriggerByInnerOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from order_trigger
+    where inner_order_id = #{innerOrderId,jdbcType=VARCHAR}  ORDER BY gmt_create limit 1 
+  </select>
+</mapper>

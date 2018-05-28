@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.withdrawal.mapper.WithdrawalMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.withdrawal.bean.Withdrawal" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="cash_no" property="cashNo" jdbcType="VARCHAR" />
+    <result column="vpp" property="vpp" jdbcType="DECIMAL" />
+    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <result column="payer_address" property="payerAddress" jdbcType="VARCHAR" />
+    <result column="payee_address" property="payeeAddress" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="operation_time" property="operationTime" jdbcType="TIMESTAMP" />
+    <result column="operation_desc" property="operationDesc" jdbcType="VARCHAR" />
+    <result column="gas" property="gas" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, cash_no, vpp, customer_id, payer_address, payee_address, description, gmt_create, 
+    gmt_modified, state, operator_id, operation_time, operation_desc, gas
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from withdrawal
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from withdrawal
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.withdrawal.bean.Withdrawal" >
+    insert into withdrawal (id, cash_no, vpp, 
+      customer_id, payer_address, payee_address, 
+      description, gmt_create, gmt_modified, 
+      state, operator_id, operation_time, 
+      operation_desc, gas)
+    values (#{id,jdbcType=BIGINT}, #{cashNo,jdbcType=VARCHAR}, #{vpp,jdbcType=DECIMAL}, 
+      #{customerId,jdbcType=BIGINT}, #{payerAddress,jdbcType=VARCHAR}, #{payeeAddress,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
+      #{state,jdbcType=TINYINT}, #{operatorId,jdbcType=BIGINT}, #{operationTime,jdbcType=TIMESTAMP}, 
+      #{operationDesc,jdbcType=VARCHAR}, #{gas,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.withdrawal.bean.Withdrawal" >
+    insert into withdrawal
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cashNo != null" >
+        cash_no,
+      </if>
+      <if test="vpp != null" >
+        vpp,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="payerAddress != null" >
+        payer_address,
+      </if>
+      <if test="payeeAddress != null" >
+        payee_address,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="operationTime != null" >
+        operation_time,
+      </if>
+      <if test="operationDesc != null" >
+        operation_desc,
+      </if>
+      <if test="gas != null" >
+        gas,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="cashNo != null" >
+        #{cashNo,jdbcType=VARCHAR},
+      </if>
+      <if test="vpp != null" >
+        #{vpp,jdbcType=DECIMAL},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="payerAddress != null" >
+        #{payerAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeAddress != null" >
+        #{payeeAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModified != null" >
+        #{gmtModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="operationTime != null" >
+        #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationDesc != null" >
+        #{operationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="gas != null" >
+        #{gas,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.withdrawal.bean.Withdrawal" >
+    update withdrawal
+    <set >
+      <if test="cashNo != null" >
+        cash_no = #{cashNo,jdbcType=VARCHAR},
+      </if>
+      <if test="vpp != null" >
+        vpp = #{vpp,jdbcType=DECIMAL},
+      </if>
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="payerAddress != null" >
+        payer_address = #{payerAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeAddress != null" >
+        payee_address = #{payeeAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="operationTime != null" >
+        operation_time = #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationDesc != null" >
+        operation_desc = #{operationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="gas != null" >
+        gas = #{gas,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.withdrawal.bean.Withdrawal" >
+    update withdrawal
+    set cash_no = #{cashNo,jdbcType=VARCHAR},
+      vpp = #{vpp,jdbcType=DECIMAL},
+      customer_id = #{customerId,jdbcType=BIGINT},
+      payer_address = #{payerAddress,jdbcType=VARCHAR},
+      payee_address = #{payeeAddress,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=TINYINT},
+      operator_id = #{operatorId,jdbcType=BIGINT},
+      operation_time = #{operationTime,jdbcType=TIMESTAMP},
+      operation_desc = #{operationDesc,jdbcType=VARCHAR},
+      gas = #{gas,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectWithdrawalList"  resultMap="BaseResultMap" parameterType="map">
+  	   select * from withdrawal where customer_id = #{customerId}
+  </select>
+  
+</mapper>

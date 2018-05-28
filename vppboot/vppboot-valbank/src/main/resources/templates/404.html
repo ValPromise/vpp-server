@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>hello</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style>
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.oops{
+	font-size: 100px;
+}
+</style>
+</head>
+<body bgcolor="#d4d4d4" style="width: 100%; height: 100%;">
+	<!--/*@thymesVar id="name" type="java.lang.String"*/-->
+	<div style=" height: 100vh;">
+		<div align="center" style="padding-top: 200px;">
+			<span class="oops">404!</span><br/>
+			<img alt="error" src="/images/error.png"></img>
+			<p>There seems to be a problem with the page you requested
+			(<span th:text="${path}"></span>)</p>
+			<p th:text=" ${'Details: '+message} + '!'"></p>
+		</div>
+	</div>
+</body>
+</html>

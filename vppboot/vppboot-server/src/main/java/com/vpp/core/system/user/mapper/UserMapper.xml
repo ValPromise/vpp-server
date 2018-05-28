@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.system.user.mapper.UserMapper">
+	<resultMap id="BaseResultMap" type="com.vpp.core.system.user.bean.User">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="login_name" property="loginName" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="salt" property="salt" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="TINYINT" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="TINYINT" />
+		<result column="organization_id" property="organizationId"
+			jdbcType="BIGINT" />
+		<result column="user_type" property="userType" jdbcType="TINYINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, login_name, name, password, salt, sex, phone, email,
+		create_time,
+		gmt_modified,
+		description, status, organization_id,
+		user_type
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from user
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.vpp.core.system.user.bean.User">
+		insert into user (id,
+		login_name, name,
+		password, salt, sex,
+		phone, email, create_time,
+		gmt_modified, description, status,
+		organization_id, user_type)
+		values
+		(#{id,jdbcType=BIGINT}, #{loginName,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{salt,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT},
+		#{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{gmtModified,jdbcType=TIMESTAMP},
+		#{description,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+		#{organizationId,jdbcType=BIGINT}, #{userType,jdbcType=TINYINT})
+	</insert>
+	<insert id="insertSelective" parameterType="com.vpp.core.system.user.bean.User">
+		insert into user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="loginName != null">
+				login_name,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="salt != null">
+				salt,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="organizationId != null">
+				organization_id,
+			</if>
+			<if test="userType != null">
+				user_type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="loginName != null">
+				#{loginName,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="salt != null">
+				#{salt,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=TINYINT},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null">
+				#{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=TINYINT},
+			</if>
+			<if test="organizationId != null">
+				#{organizationId,jdbcType=BIGINT},
+			</if>
+			<if test="userType != null">
+				#{userType,jdbcType=TINYINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.system.user.bean.User">
+		update user
+		<set>
+			<if test="loginName != null">
+				login_name = #{loginName,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="salt != null">
+				salt = #{salt,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=TINYINT},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=TINYINT},
+			</if>
+			<if test="organizationId != null">
+				organization_id = #{organizationId,jdbcType=BIGINT},
+			</if>
+			<if test="userType != null">
+				user_type = #{userType,jdbcType=TINYINT},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.vpp.core.system.user.bean.User">
+		update user
+		set
+		login_name = #{loginName,jdbcType=VARCHAR},
+		name =
+		#{name,jdbcType=VARCHAR},
+		password = #{password,jdbcType=VARCHAR},
+		salt
+		= #{salt,jdbcType=VARCHAR},
+		sex = #{sex,jdbcType=TINYINT},
+		phone =
+		#{phone,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		gmt_modified =
+		#{gmtModified,jdbcType=TIMESTAMP},
+		description =
+		#{description,jdbcType=VARCHAR},
+		status = #{status,jdbcType=TINYINT},
+		organization_id = #{organizationId,jdbcType=BIGINT},
+		user_type =
+		#{userType,jdbcType=TINYINT}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="findLimitByCond" resultMap="BaseResultMap">
+		select * from user where 1=1
+		<if test="loginName != null">
+			and login_name like CONCAT('%',#{loginName},'%')
+		</if>
+		order by id desc
+	</select>
+
+	<select id="findUserVoLimitByCond" resultType="com.vpp.core.system.user.bean.UserVo">
+		select u.*,u.login_name as loginName,u.create_time as createTime,
+        u.gmt_modified as gmtModified,u.user_type as userType,
+        GROUP_CONCAT(ur.role_id) as roleId,GROUP_CONCAT(ur.roleName) as roleName 
+		from user as u 
+		left join (
+		select ur.*,r.name as roleName from role as r ,user_role as ur  
+		where r.id = ur.role_id
+		) as ur 
+		on u.id = ur.user_id
+		where 1=1 
+		<if test="loginName != null">
+			and u.login_name like CONCAT('%',#{loginName},'%')
+		</if>
+		group by u.id 
+		order by u.id desc
+	</select>
+
+	<select id="login" resultMap="BaseResultMap">
+		select * from user where
+		login_name = #{loginName} and password = #{password}
+	</select>
+</mapper>

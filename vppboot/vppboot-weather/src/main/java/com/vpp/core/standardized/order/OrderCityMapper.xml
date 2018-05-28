@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.standardized.order.OrderCityMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.standardized.order.OrderCity" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="inner_order_id" property="innerOrderId" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityId" jdbcType="VARCHAR" />
+    <result column="threshold" property="threshold" jdbcType="REAL" />
+    <result column="stime" property="stime" jdbcType="TIMESTAMP" />
+    <result column="etime" property="etime" jdbcType="TIMESTAMP" />
+    <result column="op_type" property="opType" jdbcType="TINYINT" />
+    <result column="weather_type" property="weatherType" jdbcType="TINYINT" />
+    <result column="trigger_rule_param" property="triggerRuleParam" jdbcType="VARCHAR" />
+    <result column="payout_rule_param" property="payoutRuleParam" jdbcType="VARCHAR" />
+    <result column="contract_price" property="contractPrice" jdbcType="DECIMAL" />
+    <result column="contract_id" property="contractId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, inner_order_id, city_id, threshold, stime, etime, op_type, weather_type, trigger_rule_param, 
+    payout_rule_param, contract_price, contract_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from order_city
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from order_city
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.standardized.order.OrderCity" >
+    insert into order_city (id, inner_order_id, city_id, 
+      threshold, stime, etime, 
+      op_type, weather_type, trigger_rule_param, 
+      payout_rule_param, contract_price, contract_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{innerOrderId,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, 
+      #{threshold,jdbcType=REAL}, #{stime,jdbcType=TIMESTAMP}, #{etime,jdbcType=TIMESTAMP}, 
+      #{opType,jdbcType=TINYINT}, #{weatherType,jdbcType=TINYINT}, #{triggerRuleParam,jdbcType=VARCHAR}, 
+      #{payoutRuleParam,jdbcType=VARCHAR}, #{contractPrice,jdbcType=DECIMAL}, #{contractId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.standardized.order.OrderCity" >
+    insert into order_city
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="innerOrderId != null" >
+        inner_order_id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="threshold != null" >
+        threshold,
+      </if>
+      <if test="stime != null" >
+        stime,
+      </if>
+      <if test="etime != null" >
+        etime,
+      </if>
+      <if test="opType != null" >
+        op_type,
+      </if>
+      <if test="weatherType != null" >
+        weather_type,
+      </if>
+      <if test="triggerRuleParam != null" >
+        trigger_rule_param,
+      </if>
+      <if test="payoutRuleParam != null" >
+        payout_rule_param,
+      </if>
+      <if test="contractPrice != null" >
+        contract_price,
+      </if>
+      <if test="contractId != null" >
+        contract_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="innerOrderId != null" >
+        #{innerOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="threshold != null" >
+        #{threshold,jdbcType=REAL},
+      </if>
+      <if test="stime != null" >
+        #{stime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="etime != null" >
+        #{etime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opType != null" >
+        #{opType,jdbcType=TINYINT},
+      </if>
+      <if test="weatherType != null" >
+        #{weatherType,jdbcType=TINYINT},
+      </if>
+      <if test="triggerRuleParam != null" >
+        #{triggerRuleParam,jdbcType=VARCHAR},
+      </if>
+      <if test="payoutRuleParam != null" >
+        #{payoutRuleParam,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null" >
+        #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="contractId != null" >
+        #{contractId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.standardized.order.OrderCity" >
+    update order_city
+    <set >
+      <if test="innerOrderId != null" >
+        inner_order_id = #{innerOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="threshold != null" >
+        threshold = #{threshold,jdbcType=REAL},
+      </if>
+      <if test="stime != null" >
+        stime = #{stime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="etime != null" >
+        etime = #{etime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opType != null" >
+        op_type = #{opType,jdbcType=TINYINT},
+      </if>
+      <if test="weatherType != null" >
+        weather_type = #{weatherType,jdbcType=TINYINT},
+      </if>
+      <if test="triggerRuleParam != null" >
+        trigger_rule_param = #{triggerRuleParam,jdbcType=VARCHAR},
+      </if>
+      <if test="payoutRuleParam != null" >
+        payout_rule_param = #{payoutRuleParam,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null" >
+        contract_price = #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="contractId != null" >
+        contract_id = #{contractId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.standardized.order.OrderCity" >
+    update order_city
+    set inner_order_id = #{innerOrderId,jdbcType=VARCHAR},
+      city_id = #{cityId,jdbcType=VARCHAR},
+      threshold = #{threshold,jdbcType=REAL},
+      stime = #{stime,jdbcType=TIMESTAMP},
+      etime = #{etime,jdbcType=TIMESTAMP},
+      op_type = #{opType,jdbcType=TINYINT},
+      weather_type = #{weatherType,jdbcType=TINYINT},
+      trigger_rule_param = #{triggerRuleParam,jdbcType=VARCHAR},
+      payout_rule_param = #{payoutRuleParam,jdbcType=VARCHAR},
+      contract_price = #{contractPrice,jdbcType=DECIMAL},
+      contract_id = #{contractId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getCitysByOrderId"  resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+	 from order_city
+  	where inner_order_id = #{innerOrderId}
+  </select>
+</mapper>

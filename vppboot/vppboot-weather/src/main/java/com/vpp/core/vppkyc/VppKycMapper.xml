@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.vppkyc.VppKycMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.vppkyc.VppKyc" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="nation" property="nation" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="wechat" property="wechat" jdbcType="VARCHAR" />
+    <result column="telegram_id" property="telegramId" jdbcType="VARCHAR" />
+    <result column="Invest_projects" property="investProjects" jdbcType="VARCHAR" />
+    <result column="Institution_name" property="institutionName" jdbcType="VARCHAR" />
+    <result column="passport_img_url" property="passportImgUrl" jdbcType="VARCHAR" />
+    <result column="institution_img_url" property="institutionImgUrl" jdbcType="VARCHAR" />
+    <result column="wallet_account" property="walletAccount" jdbcType="VARCHAR" />
+    <result column="investment_amounts" property="investmentAmounts" jdbcType="VARCHAR" />
+    <result column="gmt_time" property="gmtTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_name, nation, email, mobile, wechat, telegram_id, Invest_projects, Institution_name, 
+    passport_img_url, institution_img_url, wallet_account, investment_amounts, gmt_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vpp_kyc
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from vpp_kyc
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.vppkyc.VppKyc" >
+    insert into vpp_kyc (id, user_name, nation, 
+      email, mobile, wechat, 
+      telegram_id, Invest_projects, Institution_name, 
+      passport_img_url, institution_img_url, wallet_account, 
+      investment_amounts, gmt_time)
+    values (#{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{wechat,jdbcType=VARCHAR}, 
+      #{telegramId,jdbcType=VARCHAR}, #{investProjects,jdbcType=VARCHAR}, #{institutionName,jdbcType=VARCHAR}, 
+      #{passportImgUrl,jdbcType=VARCHAR}, #{institutionImgUrl,jdbcType=VARCHAR}, #{walletAccount,jdbcType=VARCHAR}, 
+      #{investmentAmounts,jdbcType=VARCHAR}, #{gmtTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.vppkyc.VppKyc" >
+    insert into vpp_kyc
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="nation != null" >
+        nation,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="wechat != null" >
+        wechat,
+      </if>
+      <if test="telegramId != null" >
+        telegram_id,
+      </if>
+      <if test="investProjects != null" >
+        Invest_projects,
+      </if>
+      <if test="institutionName != null" >
+        Institution_name,
+      </if>
+      <if test="passportImgUrl != null" >
+        passport_img_url,
+      </if>
+      <if test="institutionImgUrl != null" >
+        institution_img_url,
+      </if>
+      <if test="walletAccount != null" >
+        wallet_account,
+      </if>
+      <if test="investmentAmounts != null" >
+        investment_amounts,
+      </if>
+      <if test="gmtTime != null" >
+        gmt_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null" >
+        #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="telegramId != null" >
+        #{telegramId,jdbcType=VARCHAR},
+      </if>
+      <if test="investProjects != null" >
+        #{investProjects,jdbcType=VARCHAR},
+      </if>
+      <if test="institutionName != null" >
+        #{institutionName,jdbcType=VARCHAR},
+      </if>
+      <if test="passportImgUrl != null" >
+        #{passportImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="institutionImgUrl != null" >
+        #{institutionImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="walletAccount != null" >
+        #{walletAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="investmentAmounts != null" >
+        #{investmentAmounts,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtTime != null" >
+        #{gmtTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.vppkyc.VppKyc" >
+    update vpp_kyc
+    <set >
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        nation = #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null" >
+        wechat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="telegramId != null" >
+        telegram_id = #{telegramId,jdbcType=VARCHAR},
+      </if>
+      <if test="investProjects != null" >
+        Invest_projects = #{investProjects,jdbcType=VARCHAR},
+      </if>
+      <if test="institutionName != null" >
+        Institution_name = #{institutionName,jdbcType=VARCHAR},
+      </if>
+      <if test="passportImgUrl != null" >
+        passport_img_url = #{passportImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="institutionImgUrl != null" >
+        institution_img_url = #{institutionImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="walletAccount != null" >
+        wallet_account = #{walletAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="investmentAmounts != null" >
+        investment_amounts = #{investmentAmounts,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtTime != null" >
+        gmt_time = #{gmtTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.vppkyc.VppKyc" >
+    update vpp_kyc
+    set user_name = #{userName,jdbcType=VARCHAR},
+      nation = #{nation,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      wechat = #{wechat,jdbcType=VARCHAR},
+      telegram_id = #{telegramId,jdbcType=VARCHAR},
+      Invest_projects = #{investProjects,jdbcType=VARCHAR},
+      Institution_name = #{institutionName,jdbcType=VARCHAR},
+      passport_img_url = #{passportImgUrl,jdbcType=VARCHAR},
+      institution_img_url = #{institutionImgUrl,jdbcType=VARCHAR},
+      wallet_account = #{walletAccount,jdbcType=VARCHAR},
+      investment_amounts = #{investmentAmounts,jdbcType=VARCHAR},
+      gmt_time = #{gmtTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.country.mapper.CountryInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.country.bean.CountryInfo" >
+    <id column="country_id" property="countryId" jdbcType="BIGINT" />
+    <result column="country_name" property="countryName" jdbcType="VARCHAR" />
+    <result column="country_code" property="countryCode" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="continents_id" property="continentsId" jdbcType="BIGINT" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="country_us" property="countryUs" jdbcType="VARCHAR" />
+    <result column="country_cn" property="countryCn" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    country_id, country_name, country_code, description, continents_id, sort, country_us, 
+    country_cn
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from country_info
+    where country_id = #{countryId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from country_info
+    where country_id = #{countryId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.country.bean.CountryInfo" >
+    insert into country_info (country_id, country_name, country_code, 
+      description, continents_id, sort, 
+      country_us, country_cn)
+    values (#{countryId,jdbcType=BIGINT}, #{countryName,jdbcType=VARCHAR}, #{countryCode,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{continentsId,jdbcType=BIGINT}, #{sort,jdbcType=INTEGER}, 
+      #{countryUs,jdbcType=VARCHAR}, #{countryCn,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.country.bean.CountryInfo" >
+    insert into country_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="countryId != null" >
+        country_id,
+      </if>
+      <if test="countryName != null" >
+        country_name,
+      </if>
+      <if test="countryCode != null" >
+        country_code,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="continentsId != null" >
+        continents_id,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="countryUs != null" >
+        country_us,
+      </if>
+      <if test="countryCn != null" >
+        country_cn,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="countryId != null" >
+        #{countryId,jdbcType=BIGINT},
+      </if>
+      <if test="countryName != null" >
+        #{countryName,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCode != null" >
+        #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="continentsId != null" >
+        #{continentsId,jdbcType=BIGINT},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="countryUs != null" >
+        #{countryUs,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCn != null" >
+        #{countryCn,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.country.bean.CountryInfo" >
+    update country_info
+    <set >
+      <if test="countryName != null" >
+        country_name = #{countryName,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCode != null" >
+        country_code = #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="continentsId != null" >
+        continents_id = #{continentsId,jdbcType=BIGINT},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="countryUs != null" >
+        country_us = #{countryUs,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCn != null" >
+        country_cn = #{countryCn,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where country_id = #{countryId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.country.bean.CountryInfo" >
+    update country_info
+    set country_name = #{countryName,jdbcType=VARCHAR},
+      country_code = #{countryCode,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      continents_id = #{continentsId,jdbcType=BIGINT},
+      sort = #{sort,jdbcType=INTEGER},
+      country_us = #{countryUs,jdbcType=VARCHAR},
+      country_cn = #{countryCn,jdbcType=VARCHAR}
+    where country_id = #{countryId,jdbcType=BIGINT}
+  </update>
+  <select id="getCountryList" resultMap="BaseResultMap" parameterType="map">
+  	select * from country_info
+  	where 1=1 
+  	<if test="countryName !=null and countryName !=''">
+  		and country_name like concat("%",countryName,"%")
+  	</if>
+  	  	<if test="countryUs !=null and countryUs !=''">
+  		and country_us like concat("%",countryUs,"%")
+  	</if>
+  </select>
+</mapper>

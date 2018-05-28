@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.standardized.payout.OrderPayoutMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.standardized.payout.OrderPayout" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="payout_fee" property="payoutFee" jdbcType="DECIMAL" />
+    <result column="payout_state" property="payoutState" jdbcType="TINYINT" />
+    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="operation_time" property="operationTime" jdbcType="TIMESTAMP" />
+    <result column="operation_desc" property="operationDesc" jdbcType="VARCHAR" />
+    <result column="real_payout_fee" property="realPayoutFee" jdbcType="DECIMAL" />
+    <result column="pay_receipt" property="payReceipt" jdbcType="VARCHAR" />
+    <result column="data_state" property="dataState" jdbcType="TINYINT" />
+    <result column="inner_order_id" property="innerOrderId" jdbcType="VARCHAR" />
+    <result column="trigger_code" property="triggerCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, gmt_create, description, payout_fee, payout_state, customer_id, operator_id, 
+    operation_time, operation_desc, real_payout_fee, pay_receipt, data_state, inner_order_id, 
+    trigger_code
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from order_payout
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from order_payout
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.standardized.payout.OrderPayout" >
+    insert into order_payout (id, gmt_create, description, 
+      payout_fee, payout_state, customer_id, 
+      operator_id, operation_time, operation_desc, 
+      real_payout_fee, pay_receipt, data_state, 
+      inner_order_id, trigger_code)
+    values (#{id,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, 
+      #{payoutFee,jdbcType=DECIMAL}, #{payoutState,jdbcType=TINYINT}, #{customerId,jdbcType=BIGINT}, 
+      #{operatorId,jdbcType=BIGINT}, #{operationTime,jdbcType=TIMESTAMP}, #{operationDesc,jdbcType=VARCHAR}, 
+      #{realPayoutFee,jdbcType=DECIMAL}, #{payReceipt,jdbcType=VARCHAR}, #{dataState,jdbcType=TINYINT}, 
+      #{innerOrderId,jdbcType=VARCHAR}, #{triggerCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.standardized.payout.OrderPayout" >
+    insert into order_payout
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="payoutFee != null" >
+        payout_fee,
+      </if>
+      <if test="payoutState != null" >
+        payout_state,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="operationTime != null" >
+        operation_time,
+      </if>
+      <if test="operationDesc != null" >
+        operation_desc,
+      </if>
+      <if test="realPayoutFee != null" >
+        real_payout_fee,
+      </if>
+      <if test="payReceipt != null" >
+        pay_receipt,
+      </if>
+      <if test="dataState != null" >
+        data_state,
+      </if>
+      <if test="innerOrderId != null" >
+        inner_order_id,
+      </if>
+      <if test="triggerCode != null" >
+        trigger_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="payoutFee != null" >
+        #{payoutFee,jdbcType=DECIMAL},
+      </if>
+      <if test="payoutState != null" >
+        #{payoutState,jdbcType=TINYINT},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="operationTime != null" >
+        #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationDesc != null" >
+        #{operationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="realPayoutFee != null" >
+        #{realPayoutFee,jdbcType=DECIMAL},
+      </if>
+      <if test="payReceipt != null" >
+        #{payReceipt,jdbcType=VARCHAR},
+      </if>
+      <if test="dataState != null" >
+        #{dataState,jdbcType=TINYINT},
+      </if>
+      <if test="innerOrderId != null" >
+        #{innerOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerCode != null" >
+        #{triggerCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.standardized.payout.OrderPayout" >
+    update order_payout
+    <set >
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="payoutFee != null" >
+        payout_fee = #{payoutFee,jdbcType=DECIMAL},
+      </if>
+      <if test="payoutState != null" >
+        payout_state = #{payoutState,jdbcType=TINYINT},
+      </if>
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="operationTime != null" >
+        operation_time = #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationDesc != null" >
+        operation_desc = #{operationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="realPayoutFee != null" >
+        real_payout_fee = #{realPayoutFee,jdbcType=DECIMAL},
+      </if>
+      <if test="payReceipt != null" >
+        pay_receipt = #{payReceipt,jdbcType=VARCHAR},
+      </if>
+      <if test="dataState != null" >
+        data_state = #{dataState,jdbcType=TINYINT},
+      </if>
+      <if test="innerOrderId != null" >
+        inner_order_id = #{innerOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerCode != null" >
+        trigger_code = #{triggerCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.standardized.payout.OrderPayout" >
+    update order_payout
+    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR},
+      payout_fee = #{payoutFee,jdbcType=DECIMAL},
+      payout_state = #{payoutState,jdbcType=TINYINT},
+      customer_id = #{customerId,jdbcType=BIGINT},
+      operator_id = #{operatorId,jdbcType=BIGINT},
+      operation_time = #{operationTime,jdbcType=TIMESTAMP},
+      operation_desc = #{operationDesc,jdbcType=VARCHAR},
+      real_payout_fee = #{realPayoutFee,jdbcType=DECIMAL},
+      pay_receipt = #{payReceipt,jdbcType=VARCHAR},
+      data_state = #{dataState,jdbcType=TINYINT},
+      inner_order_id = #{innerOrderId,jdbcType=VARCHAR},
+      trigger_code = #{triggerCode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="getPayOutHistoryCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from order_payout
+    where customer_id = #{customerId,jdbcType=BIGINT}
+    and payout_state = 1
+    order by operation_time desc
+  </select>
+  <select id= "selectOrderPayoutBypayoutState" resultMap="BaseResultMap">
+  	    select 
+  	    <include refid="Base_Column_List" />
+  	    from order_payout
+    where data_state = 1 and payout_state = #{payoutState}
+  </select>
+</mapper>

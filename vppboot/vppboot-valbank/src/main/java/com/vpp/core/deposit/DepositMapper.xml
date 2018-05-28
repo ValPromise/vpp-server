@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.deposit.DepositMapper" >
+  <resultMap id="BaseResultMap" type="com.vpp.core.deposit.Deposit" >
+     <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="cash_no" property="cashNo" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <result column="from_account" property="fromAccount" jdbcType="VARCHAR" />
+    <result column="to_account" property="toAccount" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    <result column="timastamp" property="timastamp" jdbcType="BIGINT" />
+    <result column="from_block" property="fromBlock" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, cash_no, amount, customer_id, from_account, to_account, description, gmt_create, 
+    gmt_modified, timastamp, from_block
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from deposit
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from deposit
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vpp.core.deposit.Deposit" >
+    insert into deposit (id, cash_no, amount, 
+      customer_id, from_account, to_account, 
+      description, gmt_create, gmt_modified, 
+      timastamp, from_block)
+    values (#{id,jdbcType=BIGINT}, #{cashNo,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
+      #{customerId,jdbcType=BIGINT}, #{fromAccount,jdbcType=VARCHAR}, #{toAccount,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
+      #{timastamp,jdbcType=BIGINT}, #{fromBlock,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vpp.core.deposit.Deposit" >
+    insert into deposit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cashNo != null" >
+        cash_no,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="fromAccount != null" >
+        from_account,
+      </if>
+      <if test="toAccount != null" >
+        to_account,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified,
+      </if>
+      <if test="timastamp != null" >
+        timastamp,
+      </if>
+      <if test="fromBlock != null" >
+        from_block,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="cashNo != null" >
+        #{cashNo,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="fromAccount != null" >
+        #{fromAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="toAccount != null" >
+        #{toAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModified != null" >
+        #{gmtModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="timastamp != null" >
+        #{timastamp,jdbcType=BIGINT},
+      </if>
+      <if test="fromBlock != null" >
+        #{fromBlock,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.deposit.Deposit" >
+    update deposit
+    <set >
+      <if test="cashNo != null" >
+        cash_no = #{cashNo,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="fromAccount != null" >
+        from_account = #{fromAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="toAccount != null" >
+        to_account = #{toAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="timastamp != null" >
+        timastamp = #{timastamp,jdbcType=BIGINT},
+      </if>
+      <if test="fromBlock != null" >
+        from_block = #{fromBlock,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vpp.core.deposit.Deposit" >
+    update deposit
+    set cash_no = #{cashNo,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      customer_id = #{customerId,jdbcType=BIGINT},
+      from_account = #{fromAccount,jdbcType=VARCHAR},
+      to_account = #{toAccount,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      timastamp = #{timastamp,jdbcType=BIGINT},
+      from_block = #{fromBlock,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectDepositInfo" resultMap="BaseResultMap" parameterType="map">
+  		select * from deposit where customer_id = #{customerId} ORDER BY timastamp DESC
+  </select>
+  
+  <select id="getMaxBlockNumber" resultType="java.lang.Long" parameterType="java.lang.String">
+  		SELECT MAX(from_block) FROM deposit WHERE to_account =#{account}
+  </select>
+  
+  <select id="selectDepositListById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  		select * from deposit where customer_id = #{customerId}
+  </select>
+  
+</mapper>

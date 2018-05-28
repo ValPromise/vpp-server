@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.standardized.order.OrderListMapper">
+	<resultMap id="BaseResultMap" type="com.vpp.core.standardized.order.OrderList">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="customer_id" property="customerId" jdbcType="BIGINT" />
+		<result column="inner_order_id" property="innerOrderId"
+			jdbcType="VARCHAR" />
+		<result column="product_id" property="productId" jdbcType="VARCHAR" />
+		<result column="template_id" property="templateId" jdbcType="VARCHAR" />
+		<result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result column="buy_count" property="buyCount" jdbcType="INTEGER" />
+		<result column="order_price" property="orderPrice" jdbcType="DECIMAL" />
+		<result column="pay_fee" property="payFee" jdbcType="DECIMAL" />
+		<result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="pay_receipt" property="payReceipt" jdbcType="VARCHAR" />
+		<result column="payout_fee" property="payoutFee" jdbcType="DECIMAL" />
+		<result column="max_payout" property="maxPayout" jdbcType="DECIMAL" />
+		<result column="real_payout_fee" property="realPayoutFee"
+			jdbcType="DECIMAL" />
+		<result column="stime" property="stime" jdbcType="TIMESTAMP" />
+		<result column="etime" property="etime" jdbcType="TIMESTAMP" />
+		<result column="op_type" property="opType" jdbcType="TINYINT" />
+		<result column="weather_type" property="weatherType" jdbcType="TINYINT" />
+		<result column="trigger_rule_param" property="triggerRuleParam"
+			jdbcType="VARCHAR" />
+		<result column="payout_rule_param" property="payoutRuleParam"
+			jdbcType="VARCHAR" />
+		<result column="pay_state" property="payState" jdbcType="TINYINT" />
+		<result column="order_state" property="orderState" jdbcType="TINYINT" />
+		<result column="trigger_check_state" property="triggerCheckState"
+			jdbcType="TINYINT" />
+		<result column="order_desc" property="orderDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, customer_id, inner_order_id, product_id, template_id,
+		gmt_create,
+		buy_count,
+		order_price, pay_fee, pay_time, pay_receipt,
+		payout_fee, max_payout,
+		real_payout_fee,
+		stime, etime, op_type,
+		weather_type, trigger_rule_param, payout_rule_param,
+		pay_state,
+		order_state, trigger_check_state, order_desc
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from order_list
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		order_list
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.vpp.core.standardized.order.OrderList">
+		insert into order_list (id,
+		customer_id, inner_order_id,
+		product_id, template_id, gmt_create,
+		buy_count, order_price, pay_fee,
+		pay_time, pay_receipt, payout_fee,
+		max_payout, real_payout_fee, stime,
+		etime, op_type, weather_type,
+		trigger_rule_param, payout_rule_param, pay_state,
+		order_state,
+		trigger_check_state, order_desc
+		)
+		values (#{id,jdbcType=BIGINT},
+		#{customerId,jdbcType=BIGINT},
+		#{innerOrderId,jdbcType=VARCHAR},
+		#{productId,jdbcType=VARCHAR}, #{templateId,jdbcType=VARCHAR},
+		#{gmtCreate,jdbcType=TIMESTAMP},
+		#{buyCount,jdbcType=INTEGER},
+		#{orderPrice,jdbcType=DECIMAL},
+		#{payFee,jdbcType=DECIMAL},
+		#{payTime,jdbcType=TIMESTAMP}, #{payReceipt,jdbcType=VARCHAR},
+		#{payoutFee,jdbcType=DECIMAL},
+		#{maxPayout,jdbcType=DECIMAL},
+		#{realPayoutFee,jdbcType=DECIMAL},
+		#{stime,jdbcType=TIMESTAMP},
+		#{etime,jdbcType=TIMESTAMP}, #{opType,jdbcType=TINYINT},
+		#{weatherType,jdbcType=TINYINT},
+		#{triggerRuleParam,jdbcType=VARCHAR},
+		#{payoutRuleParam,jdbcType=VARCHAR}, #{payState,jdbcType=TINYINT},
+		#{orderState,jdbcType=TINYINT}, #{triggerCheckState,jdbcType=TINYINT},
+		#{orderDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.vpp.core.standardized.order.OrderList">
+		insert into order_list
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="customerId != null">
+				customer_id,
+			</if>
+			<if test="innerOrderId != null">
+				inner_order_id,
+			</if>
+			<if test="productId != null">
+				product_id,
+			</if>
+			<if test="templateId != null">
+				template_id,
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create,
+			</if>
+			<if test="buyCount != null">
+				buy_count,
+			</if>
+			<if test="orderPrice != null">
+				order_price,
+			</if>
+			<if test="payFee != null">
+				pay_fee,
+			</if>
+			<if test="payTime != null">
+				pay_time,
+			</if>
+			<if test="payReceipt != null">
+				pay_receipt,
+			</if>
+			<if test="payoutFee != null">
+				payout_fee,
+			</if>
+			<if test="maxPayout != null">
+				max_payout,
+			</if>
+			<if test="realPayoutFee != null">
+				real_payout_fee,
+			</if>
+			<if test="stime != null">
+				stime,
+			</if>
+			<if test="etime != null">
+				etime,
+			</if>
+			<if test="opType != null">
+				op_type,
+			</if>
+			<if test="weatherType != null">
+				weather_type,
+			</if>
+			<if test="triggerRuleParam != null">
+				trigger_rule_param,
+			</if>
+			<if test="payoutRuleParam != null">
+				payout_rule_param,
+			</if>
+			<if test="payState != null">
+				pay_state,
+			</if>
+			<if test="orderState != null">
+				order_state,
+			</if>
+			<if test="triggerCheckState != null">
+				trigger_check_state,
+			</if>
+			<if test="orderDesc != null">
+				order_desc,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="customerId != null">
+				#{customerId,jdbcType=BIGINT},
+			</if>
+			<if test="innerOrderId != null">
+				#{innerOrderId,jdbcType=VARCHAR},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="templateId != null">
+				#{templateId,jdbcType=VARCHAR},
+			</if>
+			<if test="gmtCreate != null">
+				#{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="buyCount != null">
+				#{buyCount,jdbcType=INTEGER},
+			</if>
+			<if test="orderPrice != null">
+				#{orderPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="payFee != null">
+				#{payFee,jdbcType=DECIMAL},
+			</if>
+			<if test="payTime != null">
+				#{payTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="payReceipt != null">
+				#{payReceipt,jdbcType=VARCHAR},
+			</if>
+			<if test="payoutFee != null">
+				#{payoutFee,jdbcType=DECIMAL},
+			</if>
+			<if test="maxPayout != null">
+				#{maxPayout,jdbcType=DECIMAL},
+			</if>
+			<if test="realPayoutFee != null">
+				#{realPayoutFee,jdbcType=DECIMAL},
+			</if>
+			<if test="stime != null">
+				#{stime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="etime != null">
+				#{etime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="opType != null">
+				#{opType,jdbcType=TINYINT},
+			</if>
+			<if test="weatherType != null">
+				#{weatherType,jdbcType=TINYINT},
+			</if>
+			<if test="triggerRuleParam != null">
+				#{triggerRuleParam,jdbcType=VARCHAR},
+			</if>
+			<if test="payoutRuleParam != null">
+				#{payoutRuleParam,jdbcType=VARCHAR},
+			</if>
+			<if test="payState != null">
+				#{payState,jdbcType=TINYINT},
+			</if>
+			<if test="orderState != null">
+				#{orderState,jdbcType=TINYINT},
+			</if>
+			<if test="triggerCheckState != null">
+				#{triggerCheckState,jdbcType=TINYINT},
+			</if>
+			<if test="orderDesc != null">
+				#{orderDesc,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.standardized.order.OrderList">
+		update order_list
+		<set>
+			<if test="customerId != null">
+				customer_id = #{customerId,jdbcType=BIGINT},
+			</if>
+			<if test="innerOrderId != null">
+				inner_order_id = #{innerOrderId,jdbcType=VARCHAR},
+			</if>
+			<if test="productId != null">
+				product_id = #{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="templateId != null">
+				template_id = #{templateId,jdbcType=VARCHAR},
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="buyCount != null">
+				buy_count = #{buyCount,jdbcType=INTEGER},
+			</if>
+			<if test="orderPrice != null">
+				order_price = #{orderPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="payFee != null">
+				pay_fee = #{payFee,jdbcType=DECIMAL},
+			</if>
+			<if test="payTime != null">
+				pay_time = #{payTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="payReceipt != null">
+				pay_receipt = #{payReceipt,jdbcType=VARCHAR},
+			</if>
+			<if test="payoutFee != null">
+				payout_fee = #{payoutFee,jdbcType=DECIMAL},
+			</if>
+			<if test="maxPayout != null">
+				max_payout = #{maxPayout,jdbcType=DECIMAL},
+			</if>
+			<if test="realPayoutFee != null">
+				real_payout_fee = #{realPayoutFee,jdbcType=DECIMAL},
+			</if>
+			<if test="stime != null">
+				stime = #{stime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="etime != null">
+				etime = #{etime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="opType != null">
+				op_type = #{opType,jdbcType=TINYINT},
+			</if>
+			<if test="weatherType != null">
+				weather_type = #{weatherType,jdbcType=TINYINT},
+			</if>
+			<if test="triggerRuleParam != null">
+				trigger_rule_param =
+				#{triggerRuleParam,jdbcType=VARCHAR},
+			</if>
+			<if test="payoutRuleParam != null">
+				payout_rule_param = #{payoutRuleParam,jdbcType=VARCHAR},
+			</if>
+			<if test="payState != null">
+				pay_state = #{payState,jdbcType=TINYINT},
+			</if>
+			<if test="orderState != null">
+				order_state = #{orderState,jdbcType=TINYINT},
+			</if>
+			<if test="triggerCheckState != null">
+				trigger_check_state =
+				#{triggerCheckState,jdbcType=TINYINT},
+			</if>
+			<if test="orderDesc != null">
+				order_desc = #{orderDesc,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.vpp.core.standardized.order.OrderList">
+		update order_list
+		set customer_id = #{customerId,jdbcType=BIGINT},
+		inner_order_id =
+		#{innerOrderId,jdbcType=VARCHAR},
+		product_id =
+		#{productId,jdbcType=VARCHAR},
+		template_id =
+		#{templateId,jdbcType=VARCHAR},
+		gmt_create =
+		#{gmtCreate,jdbcType=TIMESTAMP},
+		buy_count =
+		#{buyCount,jdbcType=INTEGER},
+		order_price =
+		#{orderPrice,jdbcType=DECIMAL},
+		pay_fee = #{payFee,jdbcType=DECIMAL},
+		pay_time = #{payTime,jdbcType=TIMESTAMP},
+		pay_receipt =
+		#{payReceipt,jdbcType=VARCHAR},
+		payout_fee =
+		#{payoutFee,jdbcType=DECIMAL},
+		max_payout =
+		#{maxPayout,jdbcType=DECIMAL},
+		real_payout_fee =
+		#{realPayoutFee,jdbcType=DECIMAL},
+		stime = #{stime,jdbcType=TIMESTAMP},
+		etime = #{etime,jdbcType=TIMESTAMP},
+		op_type =
+		#{opType,jdbcType=TINYINT},
+		weather_type =
+		#{weatherType,jdbcType=TINYINT},
+		trigger_rule_param =
+		#{triggerRuleParam,jdbcType=VARCHAR},
+		payout_rule_param =
+		#{payoutRuleParam,jdbcType=VARCHAR},
+		pay_state =
+		#{payState,jdbcType=TINYINT},
+		order_state =
+		#{orderState,jdbcType=TINYINT},
+		trigger_check_state =
+		#{triggerCheckState,jdbcType=TINYINT},
+		order_desc =
+		#{orderDesc,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<select id="getOrderList" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from order_list
+		where 1=1
+		<if test="customerId!= null and customerId !=''">
+			and customer_id = #{customerId}
+		</if>
+		<if test="innerOrderId !=null and innerOrderId !=''">
+			and inner_order_id = #{innerOrderId}
+		</if>
+		and pay_state > 0
+		order by gmt_create desc
+	</select>
+	<select id="getOrderInfoByOrderId" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from order_list
+		where 1=1
+		<if test="customerId!= null and customerId !=''">
+			and customer_id = #{customerId}
+		</if>
+		<if test="innerOrderId !=null and innerOrderId !=''">
+			and inner_order_id = #{innerOrderId}
+		</if>
+	</select>
+	<select id="findLimitByTemplateIdEtime" resultMap="BaseResultMap"
+		parameterType="map">
+		select d.* from order_list as d
+		where d.order_state = 1 and d.pay_state
+		= 1 and d.trigger_check_state <![CDATA[ <> ]]>
+		1
+		and d.template_id = #{templateId} and d.etime <![CDATA[ <=]]>
+		#{etime}
+	</select>
+	<update id="updateOrderTriggerByInnerOrderId" parameterType="map">
+		update order_list
+		set payout_fee = #{payoutFee},
+		trigger_check_state =
+		#{triggerCheckState}
+		where inner_order_id = #{innerOrderId}
+	</update>
+	<update id="updatePayoutStateByInnerOrderId" parameterType="map">
+		update order_list
+		set
+		real_payout_fee =
+		#{realPayoutFee,jdbcType=DECIMAL}
+		where inner_order_id =
+		#{innerOrderId}
+	</update>
+	<select id="getOrderByOrderId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from order_list
+		where inner_order_id = #{innerOrderId}
+	</select>
+	<select id="getPaySuccessOrderByCustomerId" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from order_list
+		where customer_id = #{customerId,jdbcType=BIGINT}
+		and
+		pay_state > 0
+		order by pay_time desc
+	</select>
+	<select id="selectOrderList" resultType="com.vpp.vo.OrderInfoVo"
+		parameterType="map">
+		SELECT
+		ol.customer_id AS customerId,
+		ol.inner_order_id AS innerOrderId,
+		ol.stime AS stime,
+		ol.real_payout_fee AS realPayoutFee,
+		ol.trigger_check_state AS triggerCheckState,
+		ol.max_payout AS
+		maxPayout,
+		ol.payout_fee AS payoutFee,
+		oc.city_id AS cityId,
+		oc.op_type
+		AS opType,
+		oc.weather_type AS weatherType,
+		oc.threshold as threshold
+		FROM
+		order_list AS ol,
+		order_city AS oc
+		WHERE
+		ol.pay_state > 0
+		<if test="customerId!= null and customerId !=''">
+			and ol.customer_id = #{customerId}
+		</if>
+		<if test="innerOrderId !=null and innerOrderId !=''">
+			and ol.inner_order_id = #{innerOrderId}
+		</if>
+		AND ol.inner_order_id = oc.inner_order_id ORDER BY ol.pay_time DESC
+	</select>
+
+	<select id="selectOrderInfo" resultType="com.vpp.vo.OrderInfoVo"
+		parameterType="map">
+		SELECT
+		ol.customer_id AS customerId,
+		ol.inner_order_id AS innerOrderId,
+		ol.stime AS stime,
+		ol.buy_count as buyCount,
+		ol.real_payout_fee AS
+		realPayoutFee,
+		ol.trigger_check_state AS triggerCheckState,
+		ol.max_payout AS maxPayout,
+		ol.payout_fee AS payoutFee,
+		ol.pay_fee AS
+		payFee,
+		oc.city_id AS cityId,
+		oc.op_type AS opType,
+		oc.weather_type AS
+		weatherType,
+		oc.threshold as threshold,
+		oc.contract_price as
+		contractPrice
+		FROM
+		order_list AS ol,
+		order_city AS oc
+		WHERE
+		ol.pay_state >
+		0
+		<if test="customerId!= null and customerId !=''">
+			and ol.customer_id = #{customerId}
+		</if>
+		<if test="innerOrderId !=null and innerOrderId !=''">
+			and ol.inner_order_id = #{innerOrderId}
+		</if>
+		AND ol.inner_order_id = oc.inner_order_id ORDER BY ol.pay_time DESC
+		limit 1
+	</select>
+
+	<select id="fingRiskCountByCustomerIdCityId" resultType="Integer">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where o.inner_order_id =
+		oc.inner_order_id and o.product_id = #{productId}
+		and o.customer_id =
+		#{customerId}
+		and oc.city_id = #{cityId} and o.gmt_create >=
+		#{date}
+	</select>
+	
+	<select id="fingRiskCountByCustomerId" resultType="Integer">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where o.inner_order_id =
+		oc.inner_order_id and o.product_id = #{productId}
+		and o.customer_id =
+		#{customerId} and o.gmt_create >=
+		#{date}
+	</select>
+	
+	<select id="fingRiskCountByProductId" resultType="Integer">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where o.inner_order_id =
+		oc.inner_order_id and o.product_id = #{productId}
+		and oc.city_id = #{cityId} and o.gmt_create >=
+		#{date}
+	</select>
+</mapper>
