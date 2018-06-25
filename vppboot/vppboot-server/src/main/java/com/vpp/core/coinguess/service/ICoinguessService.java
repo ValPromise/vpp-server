@@ -84,9 +84,10 @@ public interface ICoinguessService {
     BigDecimal getTotalProfit(List<Long> idList);
 
     /**
-     * 批量更新
+     * 批量更新下单价格（根据开奖时间）
+     * @param long lotteryTime开奖时间
      */
-    void batchUpdateOrderPrice();
+    void batchUpdateOrderPrice(Long lotteryTime);
 
     /**
      * 开奖方法（开单个客户的奖），将该客户在特定开奖时间，未开奖的数据筛选出来开奖
@@ -120,5 +121,12 @@ public interface ICoinguessService {
      * @return 下单数量
      */
     Integer getTotalOrders(Long customerId, String lotteryTime);
+
+    /**
+     * 批量退款（5分钟内无法开奖则退款）
+     *
+     * @return
+     */
+    void batchRefund();
 
 }

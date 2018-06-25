@@ -188,12 +188,10 @@ public class CoinguessService implements ICoinguessService {
 
     /**
      * 批量获得下单价格
-     *
+     * @param lotteryTime lotterytime必须要是是整分钟
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void batchUpdateOrderPrice() {
-        Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
+    public void batchUpdateOrderPrice(Long lotteryTime) {
 
         // 获取产品信息
         List<ProductCoinguess> coinguessProductList = productCoinguessService.selectProductCoinguessByStatusFull();
@@ -205,7 +203,7 @@ public class CoinguessService implements ICoinguessService {
         }
 
 
-        List<Coinguess> coinguess = selectCoinguessInfoByStatus(DateUtil.unixTimestampToTimestamp(currentLotteyTime.toString()));
+        List<Coinguess> coinguess = selectCoinguessInfoByStatus(DateUtil.unixTimestampToTimestamp(lotteryTime.toString()));
 
 
         // 检查是否有待开奖的数据，如无待开奖数据则直接返回
@@ -219,7 +217,7 @@ public class CoinguessService implements ICoinguessService {
         // 对未开奖记录获取下单价格，如果有缓存则取缓存价格
         for (Coinguess item : coinguess) {
 
-            Long realOrderTime = currentLotteyTime - 30000L;  // 下单时间被固定在30秒处，30000L = 30秒
+            Long realOrderTime = lotteryTime - 30000L;  // 下单时间被固定在30秒处，30000L = 30秒
             String key = item.getTargetId() + realOrderTime.toString();
             try {
                 if (productLotteryTimeOrderPriceMap.get(key) == null) {  //如果map中未存，则请求下单价格
@@ -248,7 +246,73 @@ public class CoinguessService implements ICoinguessService {
     }
 
     /**
-     * 前端未发开奖请求时，系统批量开奖
+     * 批量退款（5分钟内无法开奖则退款）
+     *
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void batchRefund() {
+        Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
+        Long fiveMinsBefore = currentLotteyTime - 5L * 60000L;
+
+        List<Coinguess> coinguessList = selectForRefund(DateUtil.unixTimestampToTimestamp(fiveMinsBefore.toString()));
+
+        // 检查是否有待退款的数据，如无数据则直接返回
+        if (coinguessList.size() == 0) {
+            return;
+        }
+
+        // 获取产品信息
+        List<ProductCoinguess> coinguessProductList = productCoinguessService.selectProductCoinguessByStatusFull();
+
+        // 产品id - 产品信息map缓存
+        Map<String, ProductCoinguess> coinguessProductMap = new HashMap<String, ProductCoinguess>();
+        for (ProductCoinguess item : coinguessProductList) {
+            coinguessProductMap.put(item.getProductId(), item);
+        }
+
+        for (Coinguess coinguess : coinguessList) {
+            Long customerId = coinguess.getCustomerId();
+            Long contractOwnerId = coinguessProductMap.get(coinguess.getTargetId()).getCustomerId();
+
+            coinguess.setStatus(3); //3-退款
+
+
+            // 更新用户账户余额，给账户余额加上本次盈利
+            try {
+                customerService.incomeBalance(customerId, coinguess.getOrderAmt(), "猜币退款-用户，订单ID：" + coinguess.getOrderId());
+            } catch (Exception e) {
+                logger.error("退款更新用户：" + customerId + " 的余额失败，跳过处理" + "订单号：" + coinguess.getOrderId());
+                continue;
+            }
+
+            Customer contractOwner = customerService.selectCustomerById(contractOwnerId);
+
+            // 检查合约所有者是否能够足额退款
+            if (contractOwner.getBalance().compareTo(coinguess.getOrderAmt()) > 0) {
+                try {
+                    customerService.expenditureBalance(contractOwnerId, coinguess.getOrderAmt(),
+                            "猜币退款-，订单ID： " + coinguess.getOrderId());
+                } catch (Exception e) {
+                    logger.error("更新合约所有者：" + contractOwnerId + " 的余额失败，跳过处理" + "订单号：" + coinguess.getOrderId());
+                    continue;
+                }
+            } else {
+                logger.error("合约所有者：" + contractOwnerId + " 保证金不足，暂无法退款，跳过处理" + "订单号：" + coinguess.getOrderId());
+                continue;
+            }
+        }
+    }
+
+
+
+    private List<Coinguess> selectForRefund(String lotteryTime) {
+        return coinguessMapper.selectForRefund(lotteryTime);
+    }
+
+    /**
+     * 前端未发开奖请求时，系统批量开奖，增强系统鲁棒性
+     * 只开最近三期，开不了奖的5分钟内会自动退款： batchRefund()
      *
      * @param currentTimestamp
      */
@@ -258,16 +322,22 @@ public class CoinguessService implements ICoinguessService {
         Long lastLotteryTime = currentLotteryTime - 60000L;  //上一分钟
         Long lastTwoLotteryTime = currentLotteryTime - 120000L;  //上两分钟
 
+        // 最新一期开奖
+        batchUpdateOrderPrice(currentLotteryTime);
         List<Coinguess> currentCoinguessList = selectCoinguessInfoByStatus(DateUtil.unixTimestampToTimestamp(currentLotteryTime.toString()));
         for(Coinguess item : currentCoinguessList){
             runTheLottery(item.getCustomerId(), currentLotteryTime.toString());
         }
 
+        // 上一期开奖
+        batchUpdateOrderPrice(lastLotteryTime);
         List<Coinguess> lastCoinguessList = selectCoinguessInfoByStatus(DateUtil.unixTimestampToTimestamp(lastLotteryTime.toString()));
         for(Coinguess item : lastCoinguessList){
             runTheLottery(item.getCustomerId(), lastLotteryTime.toString());
         }
 
+        // 上两期开奖
+        batchUpdateOrderPrice(lastTwoLotteryTime);
         List<Coinguess> lastTwoCoinguessList = selectCoinguessInfoByStatus(DateUtil.unixTimestampToTimestamp(lastTwoLotteryTime.toString()));
         for(Coinguess item : lastTwoCoinguessList){
             runTheLottery(item.getCustomerId(), lastTwoLotteryTime.toString());

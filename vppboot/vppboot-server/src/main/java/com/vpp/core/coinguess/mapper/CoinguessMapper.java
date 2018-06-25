@@ -39,5 +39,7 @@ public interface CoinguessMapper {
 
     Integer getTotalOrders(@Param("customerId")Long customerId, @Param("lotteryTime") String lotteryTime);
 
+    List<Coinguess> selectForRefund(@Param("lotteryTime")String Long);
+
 
 }

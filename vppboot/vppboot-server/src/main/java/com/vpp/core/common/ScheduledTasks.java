@@ -39,24 +39,53 @@ public class ScheduledTasks {
     private ICoinguessService coinguessService;
 
      @Scheduled(cron = "35 * * * * ?") //每到35整秒执行一次，1分35秒；2分35秒；3分35秒；4分35秒...
-     //批量获取下单价格
-     public void batchUpdateOrderPrice(){
-         //System.out.println("batch update order price: " + new Date());
+     //批量获取下单价格，第35秒
+     public void batchUpdateOrderPrice35(){
+         System.out.println("batchUpdateOrderPrice35: " + new Date());
          try {
-             coinguessService.batchUpdateOrderPrice();
+             Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
+             coinguessService.batchUpdateOrderPrice(currentLotteyTime);
          } catch (Exception e) {
-             logger.error("猜币批量更新下单价格出错 : " + e.getMessage());
+             logger.error("猜币批量更新下单价格出错35 : " + e.getMessage());
+            // e.printStackTrace();
          }
      }
+
+    @Scheduled(cron = "46 * * * * ?") //每到46整秒执行一次，1分46秒；2分46秒；3分46秒；4分46秒...
+    //批量获取下单价格，第46秒
+    public void batchUpdateOrderPrice46(){
+        System.out.println("batchUpdateOrderPrice46: " + new Date());
+        try {
+            Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
+            coinguessService.batchUpdateOrderPrice(currentLotteyTime);
+        } catch (Exception e) {
+            logger.error("猜币批量更新下单价格出错46 : " + e.getMessage());
+           // e.printStackTrace();
+        }
+    }
 
     @Scheduled(cron = "20 * * * * ?") //每到20整秒执行一次，1分20秒；2分20秒；3分20秒；4分20秒...
     //定时开奖
     public void batchLottery(){
-        System.out.println("run the lottery: " + new Date());
+        System.out.println("batchLottery: " + new Date());
         try {
             coinguessService.batchLottery(System.currentTimeMillis());
         } catch (Exception e) {
             logger.error("猜币定时开奖出错 : " + e.getMessage());
+            //e.printStackTrace();
+        }
+    }
+
+
+    @Scheduled(cron = "30 * * * * ?") //每到30整秒执行一次，1分30秒；2分30秒；3分30秒；4分30秒...
+    //批量退款
+    public void batchRefund(){
+        System.out.println("batchRefund: " + new Date());
+        try {
+            coinguessService.batchRefund();
+        } catch (Exception e) {
+            logger.error("批量退款出错 : " + e.getMessage());
+            //e.printStackTrace();
         }
     }
 

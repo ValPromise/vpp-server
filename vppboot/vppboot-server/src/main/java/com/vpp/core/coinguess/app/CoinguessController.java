@@ -284,9 +284,11 @@ public class CoinguessController extends CommonController {
                 statusString = "等待判定";
             } else if (1 == cc.getStatus()) {
                 statusString = "已判定，无需履行";
-            } else {
+            } else if (2 == cc.getStatus()){
                 payout = cc.getProfit().toString();
                 statusString = "已判定，已履行";
+            } else{
+                statusString = "网络故障，已退款";
             }
 
             vo.setAmount(cc.getOrderAmt().toString() + "-" + payout);
@@ -296,6 +298,7 @@ public class CoinguessController extends CommonController {
         }
         return voList;
     }
+
 
     @RequestMapping("/getDetail")
     public ResultVo coinguessDetail(String token, String orderId, HttpServletResponse response) {
