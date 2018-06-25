@@ -252,7 +252,7 @@
   	  select exists(select 1 from order_list_coin where customer_id = #{customerId} and order_ts = #{orderTs})
   </select>
   <select id="selectCoinguessInfoByStatus" resultMap="BaseResultMap" parameterType="string">
-      select * from order_list_coin where status = 0 and lottery_time > #{lotteryTime}
+      select * from order_list_coin where status = 0 and lottery_time = #{lotteryTime}
   </select>
   <select id="getTotalOrderAmountByLotteryTime" resultType="BigDecimal">
   	  select sum(order_amt) from order_list_coin group by lottery_time having lottery_time = #{lotteryTime};

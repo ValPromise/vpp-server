@@ -109,12 +109,18 @@ public class EthController {
         params.put("account", account);
         params.put("fromBlock", fromBlock.toString());
         Gson gson = new Gson();
-        String json = HttpUtils.post(IP + QUERY_VPP_DEPOSIT_URL, params);
-        ResultVo result = gson.fromJson(json, ResultVo.class);
-
-        List<DepositVo> list = gson.fromJson(gson.toJson(result.getData()), new TypeToken<List<DepositVo>>() {
-        }.getType());
-        return list;
+        try {
+            String json = HttpUtils.post(IP + QUERY_VPP_DEPOSIT_URL, params);
+            ResultVo result = gson.fromJson(json, ResultVo.class);
+            if (ResultVo.STATE_ERROR == result.getState()) {
+                return null;
+            }
+            List<DepositVo> list = gson.fromJson(gson.toJson(result.getData()), new TypeToken<List<DepositVo>>() {
+            }.getType());
+            return list;
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     /**

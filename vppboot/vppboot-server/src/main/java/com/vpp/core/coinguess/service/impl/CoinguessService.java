@@ -76,6 +76,24 @@ public class CoinguessService implements ICoinguessService {
         return res;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public int refundCoinguessOrder(Coinguess coinguess, Long customerId, Long contractOwnerId, BigDecimal orderAmt) {
+        int res = 1;
+        try {
+            // 客户收入金额
+            customerService.incomeBalance(customerId, orderAmt, "猜币退款-用户，订单ID： " + coinguess.getOrderId());
+            // 庄家支出金额
+            customerService.expenditureBalance(contractOwnerId, orderAmt, "猜币退款-庄家，订单ID：" + coinguess.getOrderId());
+
+            updateCoinguessOrder(coinguess);
+        } catch (Exception e) {
+            res = 0;
+            logger.error("订单退款出错:" + coinguess.getOrderId() + "错误信息： " +  e.getMessage());
+            throw new RuntimeException("订单退款出错");
+        }
+        return res;
+    }
+
     /**
      * 根据主键查询币价订单
      *
@@ -250,7 +268,6 @@ public class CoinguessService implements ICoinguessService {
      *
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void batchRefund() {
         Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
         Long fiveMinsBefore = currentLotteyTime - 5L * 60000L;
@@ -271,36 +288,21 @@ public class CoinguessService implements ICoinguessService {
             coinguessProductMap.put(item.getProductId(), item);
         }
 
+        Map<String, Customer> productContractOwnerMap = new HashMap<String, Customer>();
+
         for (Coinguess coinguess : coinguessList) {
             Long customerId = coinguess.getCustomerId();
             Long contractOwnerId = coinguessProductMap.get(coinguess.getTargetId()).getCustomerId();
 
-            coinguess.setStatus(3); //3-退款
+            coinguess.setStatus(3); //订单状态 3-退款
+            coinguess.setRewardFlg(2); //赔付状态 2-退款
 
-
-            // 更新用户账户余额，给账户余额加上本次盈利
             try {
-                customerService.incomeBalance(customerId, coinguess.getOrderAmt(), "猜币退款-用户，订单ID：" + coinguess.getOrderId());
+                refundCoinguessOrder(coinguess,customerId,contractOwnerId,coinguess.getOrderAmt());
             } catch (Exception e) {
-                logger.error("退款更新用户：" + customerId + " 的余额失败，跳过处理" + "订单号：" + coinguess.getOrderId());
                 continue;
             }
 
-            Customer contractOwner = customerService.selectCustomerById(contractOwnerId);
-
-            // 检查合约所有者是否能够足额退款
-            if (contractOwner.getBalance().compareTo(coinguess.getOrderAmt()) > 0) {
-                try {
-                    customerService.expenditureBalance(contractOwnerId, coinguess.getOrderAmt(),
-                            "猜币退款-，订单ID： " + coinguess.getOrderId());
-                } catch (Exception e) {
-                    logger.error("更新合约所有者：" + contractOwnerId + " 的余额失败，跳过处理" + "订单号：" + coinguess.getOrderId());
-                    continue;
-                }
-            } else {
-                logger.error("合约所有者：" + contractOwnerId + " 保证金不足，暂无法退款，跳过处理" + "订单号：" + coinguess.getOrderId());
-                continue;
-            }
         }
     }
 

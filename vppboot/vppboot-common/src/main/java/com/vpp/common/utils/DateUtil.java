@@ -16,7 +16,6 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.util.Assert;
-import sun.applet.Main;
 
 /**
  * <p>
@@ -111,6 +110,7 @@ public class DateUtil {
         return Long.toString(millis); // 1500475350423
 
     }
+
     /**
      * unix时间戳（毫秒级）转为"yyyyMMddHHmmssSSS"时间戳
      *
@@ -1221,6 +1221,13 @@ public class DateUtil {
         // System.out.println(cal.getTime().toLocaleString());
         // System.out.println(min(dateList).toLocaleString());
         // System.out.println(max(dateList).toLocaleString());
+
+        Date dd = diffSecond(new Date(), 600);
+        System.out.println(dd);
+
+        Long tenMinsBeforeNowInMillis = System.currentTimeMillis() - 600000L; // 600000毫秒 = 10分钟
+        String tenMinsBefore = DateUtil.unixTimestampToTimestamp(Long.toString(tenMinsBeforeNowInMillis));
+        System.out.println(tenMinsBefore);
     }
 
     /**

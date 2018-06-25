@@ -128,7 +128,7 @@ public class CustomerService implements ICustomerService {
                 }
             }
         } catch (Exception e) {
-            logger.error("cacheEthUsdt error");
+            logger.error("获取ETH行情出错  ::: {}", EthController.HUOBI_ETH_USDT_URL);
         }
     }
 

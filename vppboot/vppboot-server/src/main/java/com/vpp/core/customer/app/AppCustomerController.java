@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vpp.common.utils.ConstantsServer;
 import com.vpp.common.utils.MD5Utils;
 import com.vpp.common.utils.StringUtils;
+import com.vpp.common.utils.SyncTask;
 import com.vpp.common.vo.ResultVo;
 import com.vpp.core.common.CommonController;
 import com.vpp.core.common.GeetestHandle;
@@ -41,6 +41,8 @@ public class AppCustomerController extends CommonController {
     // 极验安全验证
     @Autowired
     private GeetestHandle geetestHandle;
+    @Autowired
+    private SyncTask syncTask;
 
     /** 生成二维码链接地址 **/
     private String CREATE_QR_CODE_URL = "http://qr.liantu.com/api.php";
@@ -62,11 +64,11 @@ public class AppCustomerController extends CommonController {
         String customerId = getCustomerIdByToken(token);
         Customer customer = customerService.selectCustomerById(new Long(customerId));
         if (customer == null) {
-            logger.error("token不存在 ::: {}",token);
+            logger.error("token不存在 ::: {}", token);
             return ResultVo.setResultError();
         }
         // 异步调用查询用户充值记录接口
-        this.syncDepositByAccount(customer.getDepositAddress());
+        syncTask.syncDepositByAccount(customer.getDepositAddress());
         customer = customerService.selectCustomerById(new Long(customerId));
         Map<String, Object> map = new HashMap<String, Object>();
         BigDecimal balance = customer.getBalance();
@@ -74,14 +76,6 @@ public class AppCustomerController extends CommonController {
         map.put("balance", balance.toString());
         map.put("cashAmount", customerService.getVppValue(balance));
         return ResultVo.setResultSuccess(map);
-    }
-
-    // 任务3;
-
-    @Async
-    public void syncDepositByAccount(String account) {
-        // 查询充值记录入库
-        depositService.syncDepositByAccount(account);
     }
 
     /**
@@ -488,9 +482,9 @@ public class AppCustomerController extends CommonController {
     @RequestMapping("/inviteCodePage")
     public ResultVo inviteCodePage(String token, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
-//        if (!checkLogin(token)) {
-//            return ResultVo.setResultError(getMessage("token"));
-//        }
+        // if (!checkLogin(token)) {
+        // return ResultVo.setResultError(getMessage("token"));
+        // }
         Customer customer = customerService.selectCustomerById(new Long(getCustomerIdByToken(token)));
         if (customer == null) {
             return ResultVo.setResultError();

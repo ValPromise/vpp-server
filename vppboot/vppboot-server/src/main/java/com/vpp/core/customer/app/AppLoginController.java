@@ -42,13 +42,13 @@ public class AppLoginController extends CommonController {
     private IDepositAccountService depositAccountService;
     @Autowired
     private GeetestHandle geetestHandle;
-    //获取配置文件 development , production , test
+    // 获取配置文件 development , production , test
     @Value("${spring.profiles.active}")
     private String profilesActive;
     /**
-     * 邀请人数上限
+     * 邀请人数上限，修改邀请人数上限为5000 20180621
      */
-    public static final Integer INVITE_UP = 10;
+    public static final Integer INVITE_UP = 5000;
 
     /**
      * 获取手机验证码
@@ -155,7 +155,15 @@ public class AppLoginController extends CommonController {
             return ResultVo.setResultError(getMessage("create_account_fail"));
         }
 
-        customer.setInviteCode(getInviteCode(5));
+        //邀请码非空验证
+        String newInviteCode = "";
+        Customer tempCus = null;
+        do {
+            newInviteCode = getInviteCode(5);
+            tempCus = customerService.selectByCode(newInviteCode);
+        } while (null != tempCus);
+
+        customer.setInviteCode(newInviteCode);
         customer.setDepositAddress(account);
         customer.setPassword(MD5Utils.getMD5String(password));
         customer.setInviteUp(INVITE_UP);
