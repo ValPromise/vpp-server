@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.cashlog.mapper.CustomerCashLogMapper">
+	<resultMap id="BaseResultMap" type="com.vpp.core.cashlog.bean.CustomerCashLog">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="customer_id" property="customerId" jdbcType="BIGINT" />
+		<result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="amount_type" property="amountType" jdbcType="TINYINT" />
+		<result column="amount_source" property="amountSource"
+			jdbcType="VARCHAR" />
+		<result column="balance" property="balance" jdbcType="DECIMAL" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, customer_id, gmt_create, gmt_modified, description,
+		amount,
+		amount_type, amount_source,
+		balance
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from customer_cash_log
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		customer_cash_log
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.vpp.core.cashlog.bean.CustomerCashLog">
+		insert into customer_cash_log
+		(id, customer_id, gmt_create,
+		gmt_modified, description, amount,
+		amount_type, amount_source, balance
+		)
+		values (#{id,jdbcType=BIGINT},
+		#{customerId,jdbcType=BIGINT},
+		#{gmtCreate,jdbcType=TIMESTAMP},
+		#{gmtModified,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR},
+		#{amount,jdbcType=DECIMAL},
+		#{amountType,jdbcType=TINYINT},
+		#{amountSource,jdbcType=VARCHAR},
+		#{balance,jdbcType=DECIMAL}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.vpp.core.cashlog.bean.CustomerCashLog">
+		insert into customer_cash_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="customerId != null">
+				customer_id,
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create,
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="amountType != null">
+				amount_type,
+			</if>
+			<if test="amountSource != null">
+				amount_source,
+			</if>
+			<if test="balance != null">
+				balance,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="customerId != null">
+				#{customerId,jdbcType=BIGINT},
+			</if>
+			<if test="gmtCreate != null">
+				#{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null">
+				#{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="amountType != null">
+				#{amountType,jdbcType=TINYINT},
+			</if>
+			<if test="amountSource != null">
+				#{amountSource,jdbcType=VARCHAR},
+			</if>
+			<if test="balance != null">
+				#{balance,jdbcType=DECIMAL},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.cashlog.bean.CustomerCashLog">
+		update customer_cash_log
+		<set>
+			<if test="customerId != null">
+				customer_id = #{customerId,jdbcType=BIGINT},
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="amountType != null">
+				amount_type = #{amountType,jdbcType=TINYINT},
+			</if>
+			<if test="amountSource != null">
+				amount_source = #{amountSource,jdbcType=VARCHAR},
+			</if>
+			<if test="balance != null">
+				balance = #{balance,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.vpp.core.cashlog.bean.CustomerCashLog">
+		update
+		customer_cash_log
+		set customer_id = #{customerId,jdbcType=BIGINT},
+		gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+		gmt_modified =
+		#{gmtModified,jdbcType=TIMESTAMP},
+		description =
+		#{description,jdbcType=VARCHAR},
+		amount = #{amount,jdbcType=DECIMAL},
+		amount_type = #{amountType,jdbcType=TINYINT},
+		amount_source =
+		#{amountSource,jdbcType=VARCHAR},
+		balance = #{balance,jdbcType=DECIMAL}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="findLimitByCondition" resultMap="BaseResultMap"
+		parameterType="map">
+		select * from customer_cash_log
+		where 1=1
+		<if test="customerId != null  and customerId !='' ">
+			and customer_id = #{customerId}
+		</if>
+		order by id desc
+	</select>
+</mapper>

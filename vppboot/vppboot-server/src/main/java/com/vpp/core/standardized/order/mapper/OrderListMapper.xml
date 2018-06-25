@@ -395,14 +395,23 @@
 		parameterType="map">
 		select d.* from order_list as d
 		where d.order_state = 1 and d.pay_state
-		= 1 and d.trigger_check_state <![CDATA[ <> ]]>
-		1
-		and d.template_id = #{templateId} and d.etime <![CDATA[ <= ]]>
+		= 1 and d.trigger_check_state = 0
+		and d.template_id = #{templateId} and
+		d.etime <![CDATA[ <= ]]>
 		#{etime}
 	</select>
 	<update id="updateOrderTriggerByInnerOrderId" parameterType="map">
 		update order_list
 		set payout_fee = #{payoutFee},
+		trigger_check_state =
+		#{triggerCheckState}
+		where inner_order_id = #{innerOrderId}
+	</update>
+	<update id="updateTriggerSuccessByInnerOrderId">
+		update order_list
+		set payout_fee =
+		#{payoutFee},real_payout_fee =
+		#{realPayoutFee},
 		trigger_check_state =
 		#{triggerCheckState}
 		where inner_order_id = #{innerOrderId}
@@ -515,7 +524,8 @@
 		gmtCreate,
 		o.order_price as orderPrice,
 		oc.city_id AS cityId,
-		oc.op_type AS opType,
+		oc.op_type
+		AS opType,
 		oc.weather_type AS
 		weatherType,
 		oc.threshold as
@@ -535,6 +545,56 @@
 		#{productId}
 		order by o.id desc
 	</select>
+	<select id="findVosByCondition" resultType="com.vpp.common.vo.OrderInfoVo"
+		parameterType="map">
+		select
+		o.customer_id AS customerId,
+		o.inner_order_id AS innerOrderId,
+		o.stime
+		AS stime,
+		o.buy_count as buyCount,
+		o.real_payout_fee AS
+		realPayoutFee,
+		o.trigger_check_state AS triggerCheckState,
+		o.max_payout
+		AS maxPayout,
+		o.payout_fee AS payoutFee,
+		o.pay_fee AS payFee,
+		o.gmt_create as
+		gmtCreate,
+		o.order_price as orderPrice,
+		oc.city_id AS
+		cityId,
+		oc.op_type
+		AS opType,
+		oc.weather_type AS
+		weatherType,
+		oc.threshold
+		as
+		threshold,
+		oc.contract_price as
+		contractPrice,c.cn_name as
+		cityCnName,c.en_name as
+		cityEnName
+		from order_list as o,order_city
+		oc,city_info as c
+		where
+		o.inner_order_id = oc.inner_order_id and
+		oc.city_id = c.city_id
+		<if test="payState != null">
+			and o.pay_state = #{payState}
+		</if>
+		<if test="orderState != null">
+			and o.order_state = #{orderState}
+		</if>
+		<if test="customerId != null and customerId !=''">
+			and o.customer_id = #{customerId}
+		</if>
+		<if test="productId != null and productId !=''">
+			and o.product_id = #{productId}
+		</if>
+		order by o.id desc
+	</select>
 	<select id="findOrderInfoVoByInnerOrderId" resultType="com.vpp.common.vo.OrderInfoVo">
 		select
 		o.customer_id AS customerId,
@@ -552,7 +612,8 @@
 		gmtCreate,
 		o.order_price as orderPrice,
 		oc.city_id AS cityId,
-		oc.op_type AS opType,
+		oc.op_type
+		AS opType,
 		oc.weather_type AS
 		weatherType,
 		oc.threshold as
@@ -568,5 +629,60 @@
 		o.pay_state = 1 and o.order_state = 1
 		and o.inner_order_id =
 		#{innerOrderId}
+	</select>
+
+	<select id="fingRiskCountByCustomerIdCityId" resultType="Integer">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where
+		o.inner_order_id =
+		oc.inner_order_id and o.product_id = #{productId}
+		and o.customer_id =
+		#{customerId}
+		and oc.city_id = #{cityId} and
+		o.gmt_create >=
+		#{date}
+	</select>
+
+	<select id="fingRiskCountByCustomerId" resultType="Integer">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where
+		o.inner_order_id =
+		oc.inner_order_id and o.product_id = #{productId}
+		and o.customer_id =
+		#{customerId} and o.gmt_create >=
+		#{date}
+	</select>
+
+	<select id="fingRiskCountByProductId" resultType="Integer">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where
+		o.inner_order_id =
+		oc.inner_order_id and o.product_id = #{productId}
+		and oc.city_id = #{cityId} and o.gmt_create >=
+		#{date}
+	</select>
+
+	<select id="fingRiskCountByParams" resultType="Integer"
+		parameterType="map">
+		select
+		count(buy_count) from order_list as o,order_city as oc
+		where
+		o.inner_order_id = oc.inner_order_id and o.pay_state = 1 and
+		o.order_state = 1
+		<if test="customerId != null and customerId !=''">
+			and o.customer_id = #{customerId}
+		</if>
+		<if test="productId != null and productId !=''">
+			and o.product_id = #{productId}
+		</if>
+		<if test="cityId != null and cityId !=''">
+			and oc.city_id = #{cityId}
+		</if>
+		<if test="date != null and date !=''">
+			and o.gmt_create >= #{date}
+		</if>
 	</select>
 </mapper>

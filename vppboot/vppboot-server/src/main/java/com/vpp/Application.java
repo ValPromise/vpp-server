@@ -36,9 +36,6 @@ public class Application extends SpringBootServletInitializer {
     // private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final Logger logger = LogManager.getLogger(Application.class);
 
-    @Value("${origin.url}")
-    String originUrl;
-
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
 

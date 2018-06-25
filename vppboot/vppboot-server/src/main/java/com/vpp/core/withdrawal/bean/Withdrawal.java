@@ -32,6 +32,19 @@ public class Withdrawal {
 
     private BigDecimal gas;
 
+    /**
+     * 区块链-时间戳
+     */
+    private Long bcTimeStamp;
+    /**
+     * 区块号
+     */
+    private Integer bcBlockNumber;
+    /**
+     * 区块链-事物回执
+     */
+    private String bcReceipt;
+
     public Long getId() {
         return id;
     }
@@ -143,4 +156,38 @@ public class Withdrawal {
     public void setGas(BigDecimal gas) {
         this.gas = gas;
     }
+
+    public Long getBcTimeStamp() {
+        return bcTimeStamp;
+    }
+
+    public void setBcTimeStamp(Long bcTimeStamp) {
+        this.bcTimeStamp = bcTimeStamp;
+    }
+
+    public Integer getBcBlockNumber() {
+        return bcBlockNumber;
+    }
+
+    public void setBcBlockNumber(Integer bcBlockNumber) {
+        this.bcBlockNumber = bcBlockNumber;
+    }
+
+    public String getBcReceipt() {
+        return bcReceipt;
+    }
+
+    public void setBcReceipt(String bcReceipt) {
+        this.bcReceipt = bcReceipt;
+    }
+
+    @Override
+    public String toString() {
+        return "Withdrawal [id=" + id + ", cashNo=" + cashNo + ", vpp=" + vpp + ", customerId=" + customerId + ", payerAddress="
+                + payerAddress + ", payeeAddress=" + payeeAddress + ", description=" + description + ", gmtCreate=" + gmtCreate
+                + ", gmtModified=" + gmtModified + ", state=" + state + ", operatorId=" + operatorId + ", operationTime="
+                + operationTime + ", operationDesc=" + operationDesc + ", gas=" + gas + ", bcTimeStamp=" + bcTimeStamp
+                + ", bcBlockNumber=" + bcBlockNumber + ", bcReceipt=" + bcReceipt + "]";
+    }
+
 }

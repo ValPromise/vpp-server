@@ -95,8 +95,21 @@ public interface ConstantsOrder {
         public static final String ERROR_OPERATION = "操作失败，请稍后再试。";
     }
 
+    /**
+     * 产品常量
+     * 
+     * @author Lxl
+     * @version V1.0 2018年5月29日
+     */
     class Product {
+        /**
+         * 高温产品ID
+         */
         public static final String PRODUCT_ID_TEMP = "TQB001";
+
+        /**
+         * 降雨产品Id
+         */
         public static final String PRODUCT_ID_RAIN = "TQB002";
     }
 }

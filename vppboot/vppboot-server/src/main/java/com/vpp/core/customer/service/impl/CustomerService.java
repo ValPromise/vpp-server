@@ -1,9 +1,7 @@
 package com.vpp.core.customer.service.impl;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -12,17 +10,25 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.vpp.common.utils.ConstantsServer;
 import com.vpp.common.utils.DealUtil;
 import com.vpp.common.utils.HttpUtils;
 import com.vpp.common.utils.StringUtils;
 import com.vpp.common.vo.ResultVo;
+import com.vpp.core.cashlog.service.ICustomerCashLogService;
 import com.vpp.core.common.EthController;
 import com.vpp.core.customer.bean.Customer;
 import com.vpp.core.customer.mapper.CustomerMapper;
 import com.vpp.core.customer.service.ICustomerService;
+import com.vpp.core.deposit.bean.DepositAccount;
+import com.vpp.core.deposit.mapper.DepositAccountMapper;
 
 @Service
 public class CustomerService implements ICustomerService {
@@ -35,6 +41,10 @@ public class CustomerService implements ICustomerService {
     @Autowired
     private CustomerMapper customerMapper;
     @Autowired
+    private DepositAccountMapper depositAccountMapper;
+    @Autowired
+    private ICustomerCashLogService customerCashLogService;
+    @Autowired
     private Gson gson;
     @Autowired
     private RedisTemplate<String, String> customerServiceRedis;
@@ -45,19 +55,26 @@ public class CustomerService implements ICustomerService {
     public static final int FROM_USD_TO_CNY_TIME = 60 * 60; // 1小时
 
     @Override
-    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public int register(Customer customer) {
-        int res = 1;
-        try {
-            Date date = new Date();
-            customer.setGmtCreate(date);
-            customerMapper.insertSelective(customer);
-        } catch (Exception e) {
-            res = 0;
-            logger.error("发生异常:" + e.getMessage());
-            throw new RuntimeException("save 抛异常了");
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public int register(Customer customer, DepositAccount depositAccount, Customer inviteCustomer) throws Exception {
+        BigDecimal registerAmount = new BigDecimal(ConstantsServer.REGISTER_CUSTOMER_ADD_VPP);
+        customer.setBalance(registerAmount);// 赠送30VPP
+        int re = customerMapper.insertSelective(customer);
+        depositAccount.setCustomerId(customer.getId());// 同步客户ID
+        depositAccountMapper.insertSelective(depositAccount);
+
+        // 资金流水记录注册赠送VPP
+        customerCashLogService.insertRegister(customer.getId(), registerAmount, "注册赠送");
+        if (null != inviteCustomer) {
+            Customer newInviteCustomer = new Customer();
+            newInviteCustomer.setId(inviteCustomer.getId());
+            BigDecimal inviteAmount = new BigDecimal(ConstantsServer.INVITE_CUSTOMER_ADD_VPP);
+            BigDecimal newBalance = DealUtil.priceAdd(inviteCustomer.getBalance(), inviteAmount);
+            newInviteCustomer.setBalance(newBalance);
+            customerMapper.updateByPrimaryKeySelective(newInviteCustomer);
+            customerCashLogService.insertInvite(inviteCustomer.getId(), inviteAmount, "邀请赠送");
         }
-        return res;
+        return re;
     }
 
     @Override
@@ -71,13 +88,22 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public Customer selectCustomerByUserName(String userName) {
-        return customerMapper.selectCustomerByUserName(userName);
+    public Customer selectCustomerByMobile(String userName) {
+        return customerMapper.selectCustomerByMobile(userName);
     }
 
     @Override
-    public int updateCustomerBalance(Long id, BigDecimal addBalance) {
-        return customerMapper.updateCustomerBalance(id, addBalance);
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public int incomeBalance(Long id, BigDecimal income, String desc) {
+        customerCashLogService.income(id, income, desc);
+        return customerMapper.incomeBalance(id, income);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public int expenditureBalance(Long id, BigDecimal expenditure, String desc) throws Exception {
+        customerCashLogService.expenditure(id, expenditure, desc);
+        return customerMapper.expenditureBalance(id, expenditure);
     }
 
     @Override
@@ -92,16 +118,17 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void cacheEthUsdt() throws Exception {
-        ResultVo resultVo = EthController.queryPoloniexEthTicker();
-        if (resultVo != null) {
-            Map<String, Object> map = (Map<String, Object>) resultVo.getData();
-            List<Double> ask = (List<Double>) map.get("ask");
-            Double askAmount = ask.get(0);
-//            logger.debug("eth k line ::: {}", askAmount);
-            if (askAmount != null) {
-                customerServiceRedis.opsForValue().set(ETH_OPEN_VALUE_KEY, askAmount.toString(), ETH_OPEN_VALUE_KEY_TIME + 2,
-                        TimeUnit.SECONDS);
+        try {
+            ResultVo resultVo = EthController.queryPoloniexEthTicker();
+            if (resultVo != null) {
+                Double askAmount = Double.valueOf(resultVo.getData().toString());
+                if (askAmount != null) {
+                    customerServiceRedis.opsForValue().set(ETH_OPEN_VALUE_KEY, askAmount.toString(),
+                            ETH_OPEN_VALUE_KEY_TIME * 60, TimeUnit.SECONDS);
+                }
             }
+        } catch (Exception e) {
+            logger.error("cacheEthUsdt error");
         }
     }
 
@@ -112,7 +139,7 @@ public class CustomerService implements ICustomerService {
         }.getType());
         Double value = Double.valueOf(map.get("result").toString());
         Double result = value / 100;
-        customerServiceRedis.opsForValue().set(FROM_USD_TO_CNY_KEY, result.toString(), FROM_USD_TO_CNY_TIME + 10,
+        customerServiceRedis.opsForValue().set(FROM_USD_TO_CNY_KEY, result.toString(), FROM_USD_TO_CNY_TIME + 24,
                 TimeUnit.SECONDS);
     }
 
@@ -147,7 +174,7 @@ public class CustomerService implements ICustomerService {
             }
             result = DealUtil.priceMultiply(value, new BigDecimal(rate.toString())).setScale(2, BigDecimal.ROUND_HALF_UP)
                     .doubleValue();
-            logger.info("vpp：" + vpp + "/eth：" + eth + "*eth开盘价：" + ethOpenValue + "*汇率：" + rate + "约等于人民币：" + result);
+            // logger.info("vpp：" + vpp + "/eth：" + eth + "*eth开盘价：" + ethOpenValue + "*汇率：" + rate + "约等于人民币：" + result);
             return result;
         } catch (Exception e) {
             logger.error("发生异常 getVppValue()：" + e.getMessage());
@@ -182,8 +209,8 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public int updatePayPassword(Map<String, Object> map) {
-        return customerMapper.updatePayPassword(map);
+    public int updatePayPassword(Long id, String payPassword) {
+        return customerMapper.updatePayPassword(id, payPassword);
     }
 
     @Override
@@ -196,4 +223,19 @@ public class CustomerService implements ICustomerService {
         return customerMapper.findByMobile(mobile);
     }
 
+    @Override
+    public int updatePassword(Long id, String password) {
+        return customerMapper.updatePassword(id, password);
+    }
+
+    @Override
+    public int updateMobile(Long id, String mobile) {
+        return customerMapper.updateMobile(id, mobile);
+    }
+
+    @Override
+    public Page<Customer> findListByCondition(Integer currentPage, Integer pageSize, Map<String, Object> params) {
+        PageHelper.startPage(currentPage, pageSize);
+        return customerMapper.findListByCondition(params);
+    }
 }

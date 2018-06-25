@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.vpp.common.utils.DealUtil;
 import com.vpp.common.vo.DepositVo;
+import com.vpp.core.cashlog.service.ICustomerCashLogService;
 import com.vpp.core.common.EthController;
 import com.vpp.core.customer.bean.Customer;
 import com.vpp.core.customer.mapper.CustomerMapper;
 import com.vpp.core.deposit.bean.Deposit;
+import com.vpp.core.deposit.mapper.DepositAccountMapper;
 import com.vpp.core.deposit.mapper.DepositMapper;
 import com.vpp.core.deposit.service.IDepositService;
 
@@ -31,7 +31,11 @@ public class DepositService implements IDepositService {
     @Autowired
     private DepositMapper depositMapper;
     @Autowired
+    private DepositAccountMapper depositAccountMapper;
+    @Autowired
     private CustomerMapper customerMapper;
+    @Autowired
+    private ICustomerCashLogService customerCashLogService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -64,53 +68,54 @@ public class DepositService implements IDepositService {
         return rows;
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    @Override
-    public int vppPay(Map<String, Object> params) {
-        int ret = 1;
-        try {
-            String account = (String) params.get("account");
+    public void syncDepositByAccount(String account) {
+        // 查询最大区块号
+        Long fromBlock = depositMapper.getMaxBlockNumber(account);
+        fromBlock = null == fromBlock ? 0l : fromBlock;
+
+        List<DepositVo> list = EthController.queryVppDeposit(account, fromBlock);
+        if (list != null) {
+            BigDecimal sum = null;
             Customer customer = customerMapper.selectByAddress(account);
-            Gson gson = new Gson();
-            // String json = HttpUtils.post(EthController.QUERY_VPP_DEPOSIT_URL,params);
-            // ResultVo result = gson.fromJson(json, ResultVo.class);
-            Object data = EthController.queryVppDeposit(params);
-            if (data != null) {
-                List<DepositVo> list = gson.fromJson(gson.toJson(data), new TypeToken<List<DepositVo>>() {
-                }.getType());
-                BigDecimal sum = null;
-                Long customerId = customer.getId();
-                for (DepositVo depositVo : list) {
-                    BigDecimal value = depositVo.getValue();
-                    Deposit deposit = new Deposit();
-                    deposit.setCustomerId(customerId);
-                    deposit.setCashNo(depositVo.getGasUsed());
-                    deposit.setPayeeAddress(depositVo.getTo());// 收款账户
-                    deposit.setPayerAddress(depositVo.getFrom()); // 支付账户
-                    deposit.setTimastamp(new Long(depositVo.getTimeStamp() + "000"));
-                    deposit.setFromBlock(depositVo.getBlockNumber());
-                    deposit.setVpp(value);
-                    deposit.setGmtCreate(new Date());
-                    if (depositMapper.insertSelective(deposit) > 0) {
-                        sum = DealUtil.priceAdd(value, sum);
-                    }
-                }
-                BigDecimal balance = customer.getBalance();
-                customer = new Customer();
-                customer.setId(customerId);
-                customer.setBalance(DealUtil.priceAdd(balance, sum));
-                customerMapper.updateByPrimaryKeySelective(customer);
+            for (DepositVo depositVo : list) {
+                BigDecimal value = depositVo.getValue();
+                String hash = depositVo.getTransactionHash();// 链上交易hashk ey
+                Deposit deposit = new Deposit();
+                deposit.setCustomerId(customer.getId());
+                deposit.setCashNo(hash);
+                deposit.setPayerAddress(depositVo.getFrom()); // 支付账户
+                deposit.setPayeeAddress(depositVo.getTo());// 收款账户
+                deposit.setTimastamp(new Long(depositVo.getTimeStamp() + "000"));
+                deposit.setFromBlock(depositVo.getBlockNumber());
+                deposit.setVpp(value);
+                deposit.setGmtCreate(new Date());
+                depositMapper.insertSelective(deposit);
+
+                logger.info("---查询到充值记录：：： {}", depositVo);
+                // 充值流水
+                sum = DealUtil.priceAdd(value, sum);
+                customerCashLogService.insertDeposit(customer.getId(), value, hash + "充值");
             }
-        } catch (Exception e) {
-            ret = 0;
-            logger.error("发生异常：" + e.getMessage());
+            if (null != sum) {
+                BigDecimal balance = customer.getBalance();
+                Customer customerTemp = new Customer();
+                customerTemp.setId(customer.getId());
+                customerTemp.setBalance(DealUtil.priceAdd(balance, sum));
+
+                // 累加客户充值钱包余额
+                depositAccountMapper.updateBalanceByAccount(account, sum.intValue());
+                // 更新客户账户余额
+                customerMapper.updateByPrimaryKeySelective(customerTemp);
+
+            }
         }
-        return ret;
     }
 
     @Override
-    public Long getMaxBlockNumber(String account) {
-        return depositMapper.getMaxBlockNumber(account);
+    public Page<Deposit> findLimit(Integer currentPage, Integer pageSize, Map<String, Object> map) {
+        PageHelper.startPage(currentPage, pageSize);
+        return depositMapper.findLimit(map);
     }
-
 }

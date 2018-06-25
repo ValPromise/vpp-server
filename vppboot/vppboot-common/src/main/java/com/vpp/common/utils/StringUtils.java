@@ -2,6 +2,8 @@ package com.vpp.common.utils;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 继承自Spring util的工具类，减少jar依赖
@@ -101,5 +103,27 @@ public class StringUtils extends org.springframework.util.StringUtils {
             return source.replace(".0", "");
         }
         return null;
+    }
+
+    /**
+     * 检查string是否是纯数字
+     *
+     * @author shiming
+     * @param string
+     * @return
+     */
+    public static boolean isPureDigital(String string) {
+        if (string == null || string.length() <= 0)
+            return false;
+
+        String regularEx = "^[0-9]*[1-9][0-9]*$";
+        Pattern p;
+        Matcher m;
+        p = Pattern.compile(regularEx);
+        m = p.matcher(string);
+        if (m.matches())
+            return true;
+        else
+            return false;
     }
 }

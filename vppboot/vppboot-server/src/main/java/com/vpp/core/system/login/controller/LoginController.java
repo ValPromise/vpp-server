@@ -2,7 +2,6 @@ package com.vpp.core.system.login.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,6 @@ import com.vpp.common.utils.ConstantsServer;
 import com.vpp.common.utils.DateUtil;
 import com.vpp.common.utils.LoginUtils;
 import com.vpp.common.utils.MD5Utils;
-import com.vpp.common.utils.TreeBuilder;
 import com.vpp.common.vo.ResultVo;
 import com.vpp.core.notice.controller.NoticeController;
 import com.vpp.core.system.resource.bean.MenuVo;
@@ -40,7 +38,7 @@ import net.sf.json.JSONArray;
  * @version V1.0 2018年4月18日
  */
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/mg/login")
 public class LoginController {
     private static final Logger logger = LogManager.getLogger(NoticeController.class);
     @Autowired

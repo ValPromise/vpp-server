@@ -32,11 +32,14 @@
 		<result column="invite_from" property="inviteFrom" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, outer_id, nick_name, name, phone, mobile, id_card, passport_number,
+		id, outer_id, nick_name, name, phone, mobile, id_card,
+		passport_number,
 		sex, email,
-		address, level, password, pay_password, source, state, gmt_create,
+		address, level, password, pay_password,
+		source, state, gmt_create,
 		gmt_modified,
-		description, balance, deposit_address, withdrawal_address, invite_code, invite_up,
+		description, balance,
+		deposit_address, withdrawal_address, invite_code, invite_up,
 		invite_from
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
@@ -47,28 +50,35 @@
 		where id = #{id,jdbcType=BIGINT}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-		delete from customer
+		delete from
+		customer
 		where id = #{id,jdbcType=BIGINT}
 	</delete>
 	<insert id="insert" parameterType="com.vpp.core.customer.bean.Customer">
-		insert into customer (id, outer_id, nick_name,
+		insert into customer (id,
+		outer_id, nick_name,
 		name, phone, mobile,
 		id_card, passport_number, sex,
 		email, address, level,
 		password, pay_password, source,
-		state, gmt_create, gmt_modified,
+		state,
+		gmt_create, gmt_modified,
 		description, balance, deposit_address,
 		withdrawal_address, invite_code, invite_up,
 		invite_from)
-		values (#{id,jdbcType=BIGINT}, #{outerId,jdbcType=VARCHAR},
+		values
+		(#{id,jdbcType=BIGINT}, #{outerId,jdbcType=VARCHAR},
 		#{nickName,jdbcType=VARCHAR},
-		#{name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
 		#{idCard,jdbcType=VARCHAR}, #{passportNumber,jdbcType=VARCHAR},
 		#{sex,jdbcType=TINYINT},
-		#{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT},
+		#{email,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT},
 		#{password,jdbcType=VARCHAR}, #{payPassword,jdbcType=VARCHAR},
 		#{source,jdbcType=VARCHAR},
-		#{state,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP},
+		#{state,jdbcType=TINYINT},
+		#{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP},
 		#{description,jdbcType=VARCHAR}, #{balance,jdbcType=DECIMAL},
 		#{depositAddress,jdbcType=VARCHAR},
 		#{withdrawalAddress,jdbcType=VARCHAR}, #{inviteCode,jdbcType=VARCHAR},
@@ -297,7 +307,8 @@
 				deposit_address = #{depositAddress,jdbcType=VARCHAR},
 			</if>
 			<if test="withdrawalAddress != null">
-				withdrawal_address = #{withdrawalAddress,jdbcType=VARCHAR},
+				withdrawal_address =
+				#{withdrawalAddress,jdbcType=VARCHAR},
 			</if>
 			<if test="inviteCode != null">
 				invite_code = #{inviteCode,jdbcType=VARCHAR},
@@ -314,59 +325,93 @@
 	<update id="updateByPrimaryKey" parameterType="com.vpp.core.customer.bean.Customer">
 		update customer
 		set outer_id = #{outerId,jdbcType=VARCHAR},
-		nick_name = #{nickName,jdbcType=VARCHAR},
+		nick_name =
+		#{nickName,jdbcType=VARCHAR},
 		name = #{name,jdbcType=VARCHAR},
-		phone = #{phone,jdbcType=VARCHAR},
+		phone =
+		#{phone,jdbcType=VARCHAR},
 		mobile = #{mobile,jdbcType=VARCHAR},
-		id_card = #{idCard,jdbcType=VARCHAR},
-		passport_number = #{passportNumber,jdbcType=VARCHAR},
+		id_card
+		= #{idCard,jdbcType=VARCHAR},
+		passport_number =
+		#{passportNumber,jdbcType=VARCHAR},
 		sex = #{sex,jdbcType=TINYINT},
 		email = #{email,jdbcType=VARCHAR},
-		address = #{address,jdbcType=VARCHAR},
+		address =
+		#{address,jdbcType=VARCHAR},
 		level = #{level,jdbcType=TINYINT},
 		password = #{password,jdbcType=VARCHAR},
-		pay_password = #{payPassword,jdbcType=VARCHAR},
+		pay_password =
+		#{payPassword,jdbcType=VARCHAR},
 		source = #{source,jdbcType=VARCHAR},
 		state = #{state,jdbcType=TINYINT},
-		gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-		gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-		description = #{description,jdbcType=VARCHAR},
+		gmt_create =
+		#{gmtCreate,jdbcType=TIMESTAMP},
+		gmt_modified =
+		#{gmtModified,jdbcType=TIMESTAMP},
+		description =
+		#{description,jdbcType=VARCHAR},
 		balance = #{balance,jdbcType=DECIMAL},
 		deposit_address = #{depositAddress,jdbcType=VARCHAR},
 		withdrawal_address = #{withdrawalAddress,jdbcType=VARCHAR},
 		invite_code = #{inviteCode,jdbcType=VARCHAR},
-		invite_up = #{inviteUp,jdbcType=INTEGER},
-		invite_from = #{inviteFrom,jdbcType=VARCHAR}
+		invite_up =
+		#{inviteUp,jdbcType=INTEGER},
+		invite_from =
+		#{inviteFrom,jdbcType=VARCHAR}
 		where id = #{id,jdbcType=BIGINT}
 	</update>
 
-	<select id="selectCustomerByUserName" resultMap="BaseResultMap"
+	<select id="selectCustomerByMobile" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-		select * from customer where mobile=#{userName}
+		select * from customer where mobile=#{mobile}
 	</select>
-	<update id="updateCustomerBalance" parameterType="map">
+	<update id="incomeBalance" parameterType="map">
 		update customer
-		set balance = balance + #{addBalance,jdbcType=DECIMAL}
-		where id = #{customerId,jdbcType=BIGINT}
+		set balance = balance + #{income,jdbcType=DECIMAL}
+		where id =
+		#{customerId,jdbcType=BIGINT}
+	</update>
+	<update id="expenditureBalance" parameterType="map">
+		update customer
+		set balance = balance - #{expenditure,jdbcType=DECIMAL}
+		where id =
+		#{customerId,jdbcType=BIGINT}
 	</update>
 
 	<select id="selectByCode" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-		select * from customer where invite_code =#{invitationCode}
+		select * from customer where invite_code
+		=#{invitationCode}
 	</select>
 
 	<select id="getWalletAddress" resultType="java.lang.String"
 		parameterType="java.lang.String">
-		select deposit_address from customer where id=#{customerId}
+		select deposit_address from customer where
+		id=#{customerId}
 	</select>
 
 	<select id="selectByAddress" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-		select * from customer where deposit_address = #{address}
+		select * from customer where deposit_address =
+		#{address}
 	</select>
 
-	<update id="updatePayPassword" parameterType="map">
-		update customer set pay_password = #{payPassword},gmt_modified=NOW() where
+	<update id="updatePayPassword">
+		update customer set pay_password =
+		#{payPassword},gmt_modified=NOW() where
+		id =#{id}
+	</update>
+
+	<update id="updatePassword">
+		update customer set password =
+		#{password},gmt_modified=NOW() where
+		id =#{id}
+	</update>
+
+	<update id="updateMobile">
+		update customer set mobile =
+		#{mobile},gmt_modified=NOW() where
 		id =#{id}
 	</update>
 
@@ -375,6 +420,17 @@
 	</select>
 
 	<select id="findByMobile" resultMap="BaseResultMap">
-		select * from customer where mobile = #{mobile}
+		select * from customer where
+		mobile = #{mobile}
+	</select>
+
+	<select id="findListByCondition" resultMap="BaseResultMap"
+		parameterType="map">
+		select * from customer
+		where 1=1
+		<if test="mobile != null  and mobile !='' ">
+			and mobile = #{mobile}
+		</if>
+		order by id desc
 	</select>
 </mapper>

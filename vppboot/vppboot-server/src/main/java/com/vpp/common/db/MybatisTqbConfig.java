@@ -43,9 +43,9 @@ public class MybatisTqbConfig {
     }
 
     /**
-     * 配置事务管理器
+     * 配置事务管理器 多数据源必须指定事物别名，否则事物不生效
      */
-    @Bean
+    @Bean(name = "vppTransactionManager")
     @Primary
     public DataSourceTransactionManager transactionManager() throws Exception {
         return new DataSourceTransactionManager(tqbDs);

@@ -1,168 +1,205 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.vpp.core.version.mapper.VersionMapper" >
-  <resultMap id="BaseResultMap" type="com.vpp.core.version.bean.Version" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
-    <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
-    <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="version_name" property="versionName" jdbcType="VARCHAR" />
-    <result column="version_code" property="versionCode" jdbcType="VARCHAR" />
-    <result column="push_time" property="pushTime" jdbcType="TIMESTAMP" />
-    <result column="creater" property="creater" jdbcType="BIGINT" />
-    <result column="mender" property="mender" jdbcType="BIGINT" />
-    <result column="is_push" property="isPush" jdbcType="TINYINT" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, gmt_create, gmt_modified, description, version_name, version_code, push_time, 
-    creater, mender, is_push, url
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from version
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
-    delete from version
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.vpp.core.version.bean.Version" >
-    insert into version (id, gmt_create, gmt_modified, 
-      description, version_name, version_code, 
-      push_time, creater, mender, 
-      is_push, url)
-    values (#{id,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{description,jdbcType=VARCHAR}, #{versionName,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, 
-      #{pushTime,jdbcType=TIMESTAMP}, #{creater,jdbcType=BIGINT}, #{mender,jdbcType=BIGINT}, 
-      #{isPush,jdbcType=TINYINT}, #{url,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.vpp.core.version.bean.Version" >
-    insert into version
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create,
-      </if>
-      <if test="gmtModified != null" >
-        gmt_modified,
-      </if>
-      <if test="description != null" >
-        description,
-      </if>
-      <if test="versionName != null" >
-        version_name,
-      </if>
-      <if test="versionCode != null" >
-        version_code,
-      </if>
-      <if test="pushTime != null" >
-        push_time,
-      </if>
-      <if test="creater != null" >
-        creater,
-      </if>
-      <if test="mender != null" >
-        mender,
-      </if>
-      <if test="isPush != null" >
-        is_push,
-      </if>
-      <if test="url != null" >
-        url,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="gmtCreate != null" >
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModified != null" >
-        #{gmtModified,jdbcType=TIMESTAMP},
-      </if>
-      <if test="description != null" >
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="versionName != null" >
-        #{versionName,jdbcType=VARCHAR},
-      </if>
-      <if test="versionCode != null" >
-        #{versionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="pushTime != null" >
-        #{pushTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="creater != null" >
-        #{creater,jdbcType=BIGINT},
-      </if>
-      <if test="mender != null" >
-        #{mender,jdbcType=BIGINT},
-      </if>
-      <if test="isPush != null" >
-        #{isPush,jdbcType=TINYINT},
-      </if>
-      <if test="url != null" >
-        #{url,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.version.bean.Version" >
-    update version
-    <set >
-      <if test="gmtCreate != null" >
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModified != null" >
-        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-      </if>
-      <if test="description != null" >
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="versionName != null" >
-        version_name = #{versionName,jdbcType=VARCHAR},
-      </if>
-      <if test="versionCode != null" >
-        version_code = #{versionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="pushTime != null" >
-        push_time = #{pushTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="creater != null" >
-        creater = #{creater,jdbcType=BIGINT},
-      </if>
-      <if test="mender != null" >
-        mender = #{mender,jdbcType=BIGINT},
-      </if>
-      <if test="isPush != null" >
-        is_push = #{isPush,jdbcType=TINYINT},
-      </if>
-      <if test="url != null" >
-        url = #{url,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.vpp.core.version.bean.Version" >
-    update version
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-      description = #{description,jdbcType=VARCHAR},
-      version_name = #{versionName,jdbcType=VARCHAR},
-      version_code = #{versionCode,jdbcType=VARCHAR},
-      push_time = #{pushTime,jdbcType=TIMESTAMP},
-      creater = #{creater,jdbcType=BIGINT},
-      mender = #{mender,jdbcType=BIGINT},
-      is_push = #{isPush,jdbcType=TINYINT},
-      url = #{url,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <select id="selectVersionList"  resultMap="BaseResultMap"  parameterType="map">
-    select *
-    from version order by id desc
-  </select>
+<mapper namespace="com.vpp.core.version.mapper.VersionMapper">
+	<resultMap id="BaseResultMap" type="com.vpp.core.version.bean.Version">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="version_name" property="versionName" jdbcType="VARCHAR" />
+		<result column="version_code" property="versionCode" jdbcType="VARCHAR" />
+		<result column="version_no" property="versionNo" jdbcType="INTEGER" />
+		<result column="push_time" property="pushTime" jdbcType="TIMESTAMP" />
+		<result column="creater" property="creater" jdbcType="BIGINT" />
+		<result column="mender" property="mender" jdbcType="BIGINT" />
+		<result column="is_push" property="isPush" jdbcType="TINYINT" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, gmt_create, gmt_modified, description, version_name,
+		version_code,
+		version_no,
+		push_time, creater, mender, is_push, url
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from version
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		version
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.vpp.core.version.bean.Version">
+		insert into version (id,
+		gmt_create, gmt_modified,
+		description, version_name, version_code,
+		version_no, push_time, creater,
+		mender, is_push, url)
+		values
+		(#{id,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+		#{gmtModified,jdbcType=TIMESTAMP},
+		#{description,jdbcType=VARCHAR},
+		#{versionName,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR},
+		#{versionNo,jdbcType=INTEGER}, #{pushTime,jdbcType=TIMESTAMP},
+		#{creater,jdbcType=BIGINT},
+		#{mender,jdbcType=BIGINT},
+		#{isPush,jdbcType=TINYINT}, #{url,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.vpp.core.version.bean.Version">
+		insert into version
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="gmtCreate != null">
+				gmt_create,
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="versionName != null">
+				version_name,
+			</if>
+			<if test="versionCode != null">
+				version_code,
+			</if>
+			<if test="versionNo != null">
+				version_no,
+			</if>
+			<if test="pushTime != null">
+				push_time,
+			</if>
+			<if test="creater != null">
+				creater,
+			</if>
+			<if test="mender != null">
+				mender,
+			</if>
+			<if test="isPush != null">
+				is_push,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="gmtCreate != null">
+				#{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null">
+				#{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="versionName != null">
+				#{versionName,jdbcType=VARCHAR},
+			</if>
+			<if test="versionCode != null">
+				#{versionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="versionNo != null">
+				#{versionNo,jdbcType=INTEGER},
+			</if>
+			<if test="pushTime != null">
+				#{pushTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="creater != null">
+				#{creater,jdbcType=BIGINT},
+			</if>
+			<if test="mender != null">
+				#{mender,jdbcType=BIGINT},
+			</if>
+			<if test="isPush != null">
+				#{isPush,jdbcType=TINYINT},
+			</if>
+			<if test="url != null">
+				#{url,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.version.bean.Version">
+		update version
+		<set>
+			<if test="gmtCreate != null">
+				gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="versionName != null">
+				version_name = #{versionName,jdbcType=VARCHAR},
+			</if>
+			<if test="versionCode != null">
+				version_code = #{versionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="versionNo != null">
+				version_no = #{versionNo,jdbcType=INTEGER},
+			</if>
+			<if test="pushTime != null">
+				push_time = #{pushTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="creater != null">
+				creater = #{creater,jdbcType=BIGINT},
+			</if>
+			<if test="mender != null">
+				mender = #{mender,jdbcType=BIGINT},
+			</if>
+			<if test="isPush != null">
+				is_push = #{isPush,jdbcType=TINYINT},
+			</if>
+			<if test="url != null">
+				url = #{url,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.vpp.core.version.bean.Version">
+		update version
+		set
+		gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+		gmt_modified =
+		#{gmtModified,jdbcType=TIMESTAMP},
+		description =
+		#{description,jdbcType=VARCHAR},
+		version_name =
+		#{versionName,jdbcType=VARCHAR},
+		version_code =
+		#{versionCode,jdbcType=VARCHAR},
+		version_no =
+		#{versionNo,jdbcType=INTEGER},
+		push_time =
+		#{pushTime,jdbcType=TIMESTAMP},
+		creater = #{creater,jdbcType=BIGINT},
+		mender = #{mender,jdbcType=BIGINT},
+		is_push =
+		#{isPush,jdbcType=TINYINT},
+		url = #{url,jdbcType=VARCHAR}
+		where id =
+		#{id,jdbcType=BIGINT}
+	</update>
+	<select id="selectVersionList" resultMap="BaseResultMap"
+		parameterType="map">
+		select *
+		from version order by id desc
+	</select>
+	<select id="findByVersionNo" resultMap="BaseResultMap">
+		select *
+		from version where
+		version_no <![CDATA[ >= ]]>
+		#{versionNo} order by version_no asc 
+	</select>
 </mapper>

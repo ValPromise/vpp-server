@@ -3,9 +3,7 @@ package com.vpp.core.standardized.trigger;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,25 +16,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.pagehelper.Page;
 import com.vpp.common.page.PageInfo;
 import com.vpp.common.utils.ConstantsOrder;
+import com.vpp.common.utils.ConstantsServer;
 import com.vpp.common.utils.DateUtil;
 import com.vpp.common.utils.DealUtil;
-import com.vpp.common.utils.HttpUtils;
-import com.vpp.common.utils.MD5Utils;
+import com.vpp.core.cashlog.service.ICustomerCashLogService;
+import com.vpp.core.customer.mapper.CustomerMapper;
 import com.vpp.core.standardized.order.bean.OrderCity;
 import com.vpp.core.standardized.order.bean.OrderList;
 import com.vpp.core.standardized.order.mapper.OrderListMapper;
 import com.vpp.core.standardized.order.service.IOrderService;
 import com.vpp.core.standardized.payout.OrderPayout;
 import com.vpp.core.standardized.payout.OrderPayoutMapper;
-import com.vpp.core.standardized.trigger.bean.WeatherTemp;
-
-import net.sf.json.JSONObject;
+import com.vpp.core.weather.bean.WeatherData;
+import com.vpp.core.weather.service.IWeatherService;
 
 @Service
 public class TriggerService implements ITriggerService {
     private static final Logger logger = LogManager.getLogger(TriggerService.class);
 
-    public static final String WEATHER_URL = "http://119.28.70.201:801/selfrain/getNmcCma";
     @Autowired
     public static final String TEMPLATE_101 = "101";
     @Autowired
@@ -47,17 +44,23 @@ public class TriggerService implements ITriggerService {
     private OrderPayoutMapper orderPayoutMapper;
     @Autowired
     private OrderTriggerMapper orderTriggerMapper;
+    @Autowired
+    private CustomerMapper customerMapper;
+    @Autowired
+    private IWeatherService weatherService;
+    @Autowired
+    private ICustomerCashLogService customerCashLogService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void triggerByEtime(String date) throws Exception {
-        System.out.println(date);
         if (StringUtils.isBlank(date)) {
             date = DateUtil.format(new Date(), DateUtil.YMD_DATE_PATTERN);
         }
         this.triggerByDate(date);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void triggerByDate(String etime) throws Exception {
         int currentPage = 1;
         int totalPage = 0;// 总页数
@@ -74,99 +77,93 @@ public class TriggerService implements ITriggerService {
         } while (currentPage <= totalPage);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateTrigger(List<OrderList> orderLists) throws Exception {
         List<OrderTrigger> orderTriggers = new ArrayList<OrderTrigger>();
         for (OrderList order : orderLists) {
-            boolean dataIsNull = false;// 天气实况数据为空标识
             BigDecimal payoutFee = new BigDecimal(0);
             byte triggerState = 0;
             List<OrderCity> orderCitys = orderService.getOrderCityByInnerOrderId(order.getInnerOrderId());
             // List<OrderTrigger> tempOrderTriggers = new ArrayList<OrderTrigger>();
             for (OrderCity orderCity : orderCitys) {
                 String cityId = orderCity.getCityId();
-                String date = DateUtil.format(orderCity.getStime(), DateUtil.YMD_DATE_TIME_PATTERN);
+                String date = orderCity.getStime();
+                date = DateUtil.stringToString(date, DateUtil.LONG_DATE_TIME_PATTERN, DateUtil.YMD_DATE_TIME_PATTERN);
                 try {
-                    WeatherTemp weatherTemp = this.getWeatherTemp(cityId, date);
-                    if (null == weatherTemp.getRealMaxTemp()) {
-                        dataIsNull = true;
+                    WeatherData weatherData = weatherService.selectWeatherTemp(cityId, date);
+                    if (null == weatherData || null == weatherData.getRealMaxTemp()) {
                         logger.error("weather data is null {},{},{}", order.getInnerOrderId(), cityId, date);
                         continue;
                     }
 
                     OrderTrigger orderTrigger = new OrderTrigger();
-                    String triggerCode = DealUtil.createId("");
 
-                    boolean isTrigger = DealUtil.weatherCompare(weatherTemp.getRealMaxTemp(), orderCity.getThreshold(),
+                    boolean isTrigger = DealUtil.weatherCompare(weatherData.getRealMaxTemp(), orderCity.getThreshold(),
                             orderCity.getOpType());
                     if (isTrigger) {
                         triggerState = 1;
                         payoutFee = order.getMaxPayout();
                     }
                     orderTrigger.setCityId(cityId);
-                    orderTrigger.setCmaWeatherValue(weatherTemp.getCmaMaxTemp());
+                    orderTrigger.setCmaWeatherValue(weatherData.getCmaMaxTemp());
                     orderTrigger.setDataState((byte) 1);
-                    orderTrigger.setGmtCreate(new Date());
+                    orderTrigger.setGmtCreate(DateUtil.getCurrentDateTimeLocal());
                     orderTrigger.setInnerOrderId(order.getInnerOrderId());
-                    orderTrigger.setNmcWeatherValue(weatherTemp.getNmcMaxTemp());
+                    orderTrigger.setNmcWeatherValue(weatherData.getNmcMaxTemp());
                     orderTrigger.setPayoutFee(payoutFee);
                     orderTrigger.setRealWeatherDate(orderCity.getStime());
                     orderTrigger.setThreshold(orderCity.getThreshold());
                     orderTrigger.setTriggerState(triggerState);
                     orderTriggers.add(orderTrigger);
 
-                    if (!dataIsNull) {
-                        // 修改触发数据，赔付数据为异常重复触发
-                        orderListMapper.updateOrderTriggerByInnerOrderId(order.getInnerOrderId(), payoutFee,
-                                ConstantsOrder.IS_OVER_TRIGGER_YES);
+                    // 修改触发数据，赔付数据为异常重复触发
+                    orderListMapper.updateTriggerSuccessByInnerOrderId(order.getInnerOrderId(), payoutFee, payoutFee,
+                            ConstantsOrder.IS_OVER_TRIGGER_YES);
+                    if (DealUtil.priceCompare(payoutFee, new BigDecimal(0), ">")) {
                         // 判断是否需要赔付
-                        if (DealUtil.priceCompare(payoutFee, new BigDecimal(0), ">")) {
-                            OrderPayout payout = new OrderPayout();
-                            payout.setCustomerId(order.getCustomerId());
-                            payout.setDataState((byte) 1);
-                            payout.setGmtCreate(new Date());
-                            payout.setInnerOrderId(order.getInnerOrderId());
-                            payout.setPayoutState((byte) 0);
-                            payout.setPayoutFee(payoutFee);
-                            payout.setTriggerCode(triggerCode);
-                            orderPayoutMapper.insertSelective(payout);
-                        }
+                        OrderPayout payout = new OrderPayout();
+                        payout.setCustomerId(order.getCustomerId());
+                        payout.setDataState(ConstantsServer.STATE_ENABLE);
+                        payout.setGmtCreate(new Date());
+                        payout.setInnerOrderId(order.getInnerOrderId());
+                        payout.setPayoutState(ConstantsOrder.PAYOUT_STATE_YES);
+                        payout.setPayoutFee(payoutFee);
+                        payout.setRealPayoutFee(payoutFee);
+                        String triggerCode = DealUtil.createId("T");
+                        payout.setTriggerCode(triggerCode);
+                        orderPayoutMapper.insertSelective(payout);
+
+                        // 修改客户钱包余额
+                        customerMapper.incomeBalance(order.getCustomerId(), payoutFee);
+                        customerCashLogService.insertPayout(order.getCustomerId(), payoutFee,
+                                "高温产品赔付" + order.getInnerOrderId());
                     }
+
+                    // // 修改触发数据，赔付数据为异常重复触发
+                    // orderListMapper.updateOrderTriggerByInnerOrderId(order.getInnerOrderId(), payoutFee,
+                    // ConstantsOrder.IS_OVER_TRIGGER_YES);
+                    // // 判断是否需要赔付
+                    // if (DealUtil.priceCompare(payoutFee, new BigDecimal(0), ">")) {
+                    // OrderPayout payout = new OrderPayout();
+                    // payout.setCustomerId(order.getCustomerId());
+                    // payout.setDataState((byte) 1);
+                    // payout.setGmtCreate(new Date());
+                    // payout.setInnerOrderId(order.getInnerOrderId());
+                    // payout.setPayoutState((byte) 0);
+                    // payout.setPayoutFee(payoutFee);
+                    // payout.setTriggerCode(triggerCode);
+                    // orderPayoutMapper.insertSelective(payout);
+                    // }
                 } catch (Exception e) {
                     logger.info(e.getMessage());
                     continue;
                 }
             }
         }
-        // 批量录入触发数据
-        orderTriggerMapper.insertOrderTriggerList(orderTriggers);
-    }
-
-    /**
-     * 查询数据接口 天气温度
-     * 
-     * @author Lxl
-     * @param cityId
-     * @param date
-     * @return
-     */
-    private WeatherTemp getWeatherTemp(String cityId, String date) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("city_id", cityId);
-        params.put("date", date);
-        params.put("token", MD5Utils.getMD5String(cityId + date + "tqb").toLowerCase());
-
-        String weatherStr = HttpUtils.post(WEATHER_URL, params);
-        if (null == weatherStr) {
-            return null;
+        if (!orderTriggers.isEmpty()) {
+            // 批量录入触发数据
+            orderTriggerMapper.insertOrderTriggerList(orderTriggers);
         }
-        JSONObject jsonObj = JSONObject.fromObject(weatherStr);
-        WeatherTemp weatherTemp = new WeatherTemp();
-        Float nmcVal = Float.valueOf(jsonObj.get("nmc_max_temp").toString());
-        Float cmaVal = Float.valueOf(jsonObj.get("cma_max_temp").toString());
-        
-        weatherTemp.setNmcMaxTemp(nmcVal);
-        weatherTemp.setCmaMaxTemp(cmaVal);
-        return weatherTemp;
     }
 
     @Override

@@ -17,9 +17,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.vpp.Application;
 import com.vpp.common.vo.ResultVo;
-import com.vpp.core.standardized.order.app.AppTempContractController;
-import com.vpp.core.standardized.order.app.AppTempOrderController;
+import com.vpp.core.app.temp.controller.AppTempContractController;
+import com.vpp.core.app.temp.controller.AppTempOrderController;
 
+/**
+ * 降雨合约测试用例
+ * 
+ * @author Lxl
+ * @version V1.0 2018年5月29日
+ */
 @SpringBootTest(classes = Application.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -42,8 +48,8 @@ public class AppTempOrderControllerTest {
 
     String mobile = "8617322370015";
     String password = "8617322370015";
-    String token = "";
-    Integer currentPage = 1;
+    String token = "856E0928805278497422045ECAAF2C8E";
+    Integer currentPage = 10;
     Integer pageSize = 20;
 
     @Test
@@ -78,7 +84,7 @@ public class AppTempOrderControllerTest {
 
         ResultVo res = appOrderController.addOrder(token, contractId, strike, buyCnt, response);
         logger.debug("-----");
-        logger.debug(res.getData());
+        logger.debug(res);
         logger.debug("-----");
     }
 }

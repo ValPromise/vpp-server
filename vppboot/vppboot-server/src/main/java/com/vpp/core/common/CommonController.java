@@ -5,8 +5,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.sql.DataSource;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +14,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import com.vpp.common.utils.Constants;
 import com.vpp.common.utils.DateUtil;
 import com.vpp.common.utils.MD5Utils;
 import com.vpp.common.utils.StringUtils;
+import com.vpp.core.customer.bean.Customer;
+import com.vpp.core.customer.service.ICustomerService;
 
 @Component
 public class CommonController {
@@ -34,7 +33,7 @@ public class CommonController {
 
     public static final int VPP_LOGIN_MOBILE_CODE_CACHE_THIRTY_MINUTE = 60 * 5;// 5分钟
 
-    public static final String TOKEN_FAIL_ERROR_CODE = "1001";
+    // public static final String TOKEN_FAIL_ERROR_CODE = "1001";
 
     public static final String VPP_IMEI_KEY = "vpp_imei_key_";
 
@@ -44,6 +43,8 @@ public class CommonController {
     private RedisTemplate<String, String> mobileCodeTokenRedis;
     @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private ICustomerService customerService;
 
     //
     @Autowired
@@ -98,18 +99,54 @@ public class CommonController {
      * @param token
      * @return
      */
-    public String getTokenId(String token) {
+    public String getCustomerIdByToken(String token) {
         String customerId = null;
-        if (!Constants.SpringProfilesActive.PRODUCTION.equals(springProfilesActive)) {
-            return "10";
-        }
-
         try {
-            customerId = loginTokenRedis.opsForValue().get(VPP_LOGIN_KEY + token);
+            if (loginTokenRedis.hasKey(VPP_LOGIN_KEY + token)) {
+                customerId = loginTokenRedis.opsForValue().get(VPP_LOGIN_KEY + token);
+            }
         } catch (Exception e) {
-            logger.error("出现异常getTokenId():" + e.getMessage());
+            logger.error("getCustomerIdByToken error ::: {}", e.getMessage());
         }
         return customerId;
+    }
+
+    /**
+     * 获取客户缓存ID
+     * 
+     * @author Lxl
+     * @param token
+     * @return
+     */
+    public Long getCustomerId(String token) {
+        Long customerId = null;
+        try {
+            if (loginTokenRedis.hasKey(VPP_LOGIN_KEY + token)) {
+                customerId = Long.valueOf(loginTokenRedis.opsForValue().get(VPP_LOGIN_KEY + token));
+            }
+        } catch (Exception e) {
+            logger.error("getCustomerId error ::: {}", e.getMessage());
+        }
+        return customerId;
+    }
+
+    /**
+     * 根据
+     * 
+     * @author Lxl
+     * @param token
+     * @return
+     */
+    public Customer findCustomerByToken(String token) {
+        try {
+            if (loginTokenRedis.hasKey(VPP_LOGIN_KEY + token)) {
+                String customerId = loginTokenRedis.opsForValue().get(VPP_LOGIN_KEY + token);
+                return customerService.selectCustomerById(Long.valueOf(customerId));
+            }
+        } catch (Exception e) {
+            logger.error("findCustomerByToken error ::: {}", e.getMessage());
+        }
+        return null;
     }
 
     /**

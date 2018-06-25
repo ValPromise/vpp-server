@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.core.coinguess.mapper.CoinguessMapper" >
+    <resultMap id="BaseResultMap" type="com.vpp.core.coinguess.bean.Coinguess" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="target_id" property="targetId" jdbcType="VARCHAR" />
+        <result column="order_amt" property="orderAmt" jdbcType="DECIMAL" />
+        <result column="order_dir" property="orderDir" jdbcType="INTEGER" />
+        <result column="order_ts" property="orderTs" jdbcType="TIMESTAMP" />
+        <result column="order_ts_unix" property="orderTsUnix" jdbcType="VARCHAR" />
+        <result column="order_price" property="orderPrice" jdbcType="DECIMAL" />
+        <result column="profit" property="profit" jdbcType="DECIMAL" />
+        <result column="lottery_time" property="lotteryTime" jdbcType="TIMESTAMP" />
+        <result column="actual_lottery_time" property="actualLotteryTime" jdbcType="TIMESTAMP" />
+        <result column="actual_price" property="actualPrice" jdbcType="DECIMAL" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="reward_flg" property="rewardFlg" jdbcType="INTEGER" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+    id, customer_id, order_id, target_id, order_amt, order_dir, order_ts, order_ts_unix,
+    order_price, profit, lottery_time, actual_lottery_time, actual_price, status, reward_flg,
+    description, gmt_create, gmt_modified
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from order_list_coin
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from order_list_coin
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.vpp.core.coinguess.bean.Coinguess" >
+    insert into order_list_coin (id, customer_id, order_id,
+      target_id, order_amt, order_dir,
+      order_ts, order_ts_unix, order_price,
+      profit, lottery_time, actual_lottery_time,
+      actual_price, status, reward_flg,
+      description, gmt_create, gmt_modified
+      )
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=VARCHAR},
+      #{targetId,jdbcType=VARCHAR}, #{orderAmt,jdbcType=DECIMAL}, #{orderDir,jdbcType=INTEGER},
+      #{orderTs,jdbcType=TIMESTAMP}, #{orderTsUnix,jdbcType=VARCHAR}, #{orderPrice,jdbcType=DECIMAL},
+      #{profit,jdbcType=DECIMAL}, #{lotteryTime,jdbcType=TIMESTAMP}, #{actualLotteryTime,jdbcType=TIMESTAMP},
+      #{actualPrice,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER}, #{rewardFlg,jdbcType=INTEGER},
+      #{description,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.vpp.core.coinguess.bean.Coinguess" >
+        insert into order_list_coin
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="customerId != null" >
+                customer_id,
+            </if>
+            <if test="orderId != null" >
+                order_id,
+            </if>
+            <if test="targetId != null" >
+                target_id,
+            </if>
+            <if test="orderAmt != null" >
+                order_amt,
+            </if>
+            <if test="orderDir != null" >
+                order_dir,
+            </if>
+            <if test="orderTs != null" >
+                order_ts,
+            </if>
+            <if test="orderTsUnix != null" >
+                order_ts_unix,
+            </if>
+            <if test="orderPrice != null" >
+                order_price,
+            </if>
+            <if test="profit != null" >
+                profit,
+            </if>
+            <if test="lotteryTime != null" >
+                lottery_time,
+            </if>
+            <if test="actualLotteryTime != null" >
+                actual_lottery_time,
+            </if>
+            <if test="actualPrice != null" >
+                actual_price,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="rewardFlg != null" >
+                reward_flg,
+            </if>
+            <if test="description != null" >
+                description,
+            </if>
+            <if test="gmtCreate != null" >
+                gmt_create,
+            </if>
+            <if test="gmtModified != null" >
+                gmt_modified,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="customerId != null" >
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null" >
+                #{orderId,jdbcType=VARCHAR},
+            </if>
+            <if test="targetId != null" >
+                #{targetId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderAmt != null" >
+                #{orderAmt,jdbcType=DECIMAL},
+            </if>
+            <if test="orderDir != null" >
+                #{orderDir,jdbcType=INTEGER},
+            </if>
+            <if test="orderTs != null" >
+                #{orderTs,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderTsUnix != null" >
+                #{orderTsUnix,jdbcType=VARCHAR},
+            </if>
+            <if test="orderPrice != null" >
+                #{orderPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="profit != null" >
+                #{profit,jdbcType=DECIMAL},
+            </if>
+            <if test="lotteryTime != null" >
+                #{lotteryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actualLotteryTime != null" >
+                #{actualLotteryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actualPrice != null" >
+                #{actualPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="rewardFlg != null" >
+                #{rewardFlg,jdbcType=INTEGER},
+            </if>
+            <if test="description != null" >
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.vpp.core.coinguess.bean.Coinguess" >
+        update order_list_coin
+        <set >
+            <if test="customerId != null" >
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null" >
+                order_id = #{orderId,jdbcType=VARCHAR},
+            </if>
+            <if test="targetId != null" >
+                target_id = #{targetId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderAmt != null" >
+                order_amt = #{orderAmt,jdbcType=DECIMAL},
+            </if>
+            <if test="orderDir != null" >
+                order_dir = #{orderDir,jdbcType=INTEGER},
+            </if>
+            <if test="orderTs != null" >
+                order_ts = #{orderTs,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderTsUnix != null" >
+                order_ts_unix = #{orderTsUnix,jdbcType=VARCHAR},
+            </if>
+            <if test="orderPrice != null" >
+                order_price = #{orderPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="profit != null" >
+                profit = #{profit,jdbcType=DECIMAL},
+            </if>
+            <if test="lotteryTime != null" >
+                lottery_time = #{lotteryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actualLotteryTime != null" >
+                actual_lottery_time = #{actualLotteryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actualPrice != null" >
+                actual_price = #{actualPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="rewardFlg != null" >
+                reward_flg = #{rewardFlg,jdbcType=INTEGER},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null" >
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.vpp.core.coinguess.bean.Coinguess" >
+    update order_list_coin
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      target_id = #{targetId,jdbcType=VARCHAR},
+      order_amt = #{orderAmt,jdbcType=DECIMAL},
+      order_dir = #{orderDir,jdbcType=INTEGER},
+      order_ts = #{orderTs,jdbcType=TIMESTAMP},
+      order_ts_unix = #{orderTsUnix,jdbcType=VARCHAR},
+      order_price = #{orderPrice,jdbcType=DECIMAL},
+      profit = #{profit,jdbcType=DECIMAL},
+      lottery_time = #{lotteryTime,jdbcType=TIMESTAMP},
+      actual_lottery_time = #{actualLotteryTime,jdbcType=TIMESTAMP},
+      actual_price = #{actualPrice,jdbcType=DECIMAL},
+      status = #{status,jdbcType=INTEGER},
+      reward_flg = #{rewardFlg,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectCoinguessInfoByCustomerId" resultMap="BaseResultMap">
+  	  select * from order_list_coin where customer_id = #{customerId} ORDER BY gmt_create DESC
+  </select>
+  <select id="selectByCustomerIdAndOrderTs" resultType="int">
+  	  select exists(select 1 from order_list_coin where customer_id = #{customerId} and order_ts = #{orderTs})
+  </select>
+  <select id="selectCoinguessInfoByStatus" resultMap="BaseResultMap" parameterType="string">
+      select * from order_list_coin where status = 0 and lottery_time = #{lotteryTime}
+  </select>
+  <select id="getTotalOrderAmountByLotteryTime" resultType="BigDecimal">
+  	  select sum(order_amt) from order_list_coin group by lottery_time having lottery_time = #{lotteryTime};
+  </select>
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="string">
+  	  select * from order_list_coin where order_id = #{orderId};
+  </select>
+   <select id="getTotalProfit" resultType="BigDecimal" parameterType="list">
+  	  select sum(profit) from order_list_coin where id in
+       <foreach item="id" collection="idList" open="(" separator="," close=")">
+           #{id}
+       </foreach>
+  	  and status = '2';
+  </select>
+    <select id="getTotalOrders" resultType="Integer">
+  	  select count(*) from order_list_coin where customer_id = #{customerId} and lottery_time = #{lotteryTime};
+  </select>
+    <select id="selectCoinguessInfoByCustomerIdAndStatus" resultMap="BaseResultMap">
+  	  select * from order_list_coin where customer_id = #{customerId} and lottery_time = #{lotteryTime} and status = '0';
+  </select>
+
+</mapper>

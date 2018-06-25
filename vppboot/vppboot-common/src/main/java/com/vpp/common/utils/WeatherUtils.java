@@ -18,7 +18,7 @@ public class WeatherUtils {
         } else if (3 == weather.intValue()) {
             return "平均气温";
         } else if (4 == weather.intValue()) {
-            return "降雨";
+            return "日累计降水量";
         } else if (5 == weather.intValue()) {
             return "风力";
         }

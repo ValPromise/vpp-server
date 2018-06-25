@@ -14,7 +14,7 @@
 	<packaging>war</packaging>
 	<name>vppboot-server</name>
 	<url>http://maven.apache.org</url>
-	
+
 	<build>
 		<finalName>server</finalName>
 		<plugins>
@@ -97,11 +97,8 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
-				<!-- 移除嵌入式tomcat插件,用于war打包
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion> -->
+				<!-- 移除嵌入式tomcat插件,用于war打包 <exclusion> <groupId>org.springframework.boot</groupId> 
+					<artifactId>spring-boot-starter-tomcat</artifactId> </exclusion> -->
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -225,25 +222,20 @@
 			<artifactId>java-telegram-bot-api</artifactId>
 			<version>3.5.2</version>
 		</dependency>
-    <dependency>
-      <groupId>com.qiniu</groupId>
-      <artifactId>qiniu-java-sdk</artifactId>
-      <version>[7.2.0, 7.2.99]</version>
-    </dependency>
-    
-    <dependency>
+		<dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>qiniu-java-sdk</artifactId>
+			<version>[7.2.0, 7.2.99]</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.github.pagehelper</groupId>
 			<artifactId>pagehelper-spring-boot-starter</artifactId>
 			<version>1.2.3</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.8</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
-		
+		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
+			<version>1.9.8</version> <type>jar</type> <scope>compile</scope> </dependency> -->
+
 		<!-- 引入common -->
 		<dependency>
 			<groupId>com.vpp.common</groupId>
@@ -251,38 +243,39 @@
 			<version>${project.version}</version>
 		</dependency>
 		<!-- 引入common -->
-				<!-- json -->
+		<!-- 引入service -->
 		<dependency>
-		  <groupId>com.google.code.gson</groupId>
-		  <artifactId>gson</artifactId>
-		  <version>2.8.2</version>
+			<groupId>com.vpp.service</groupId>
+			<artifactId>vppboot-service</artifactId>
+			<version>${project.version}</version>
 		</dependency>
-		
-		<dependency>
-   			 <groupId>com.alibaba</groupId>
-   			 <artifactId>fastjson</artifactId>
-  			 <version>1.2.28</version>
-		</dependency>
-		
+		<!-- 引入service -->
 		<!-- json -->
-		
-		<!-- <dependency>
-		    <groupId>com.aliyun</groupId>
-		    <artifactId>aliyun-java-sdk-core</artifactId>
-		    <version>3.2.2</version>
-	    </dependency>
-	    <dependency>
-		  <groupId>com.aliyun</groupId>
-		  <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
-		  <version>1.0.0</version>
-		</dependency> -->
 		<dependency>
-		    <groupId>com.vdurmont</groupId>
-		    <artifactId>emoji-java</artifactId>
-		    <version>4.0.0</version>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.2</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.28</version>
+		</dependency>
+
+		<!-- json -->
+
+		<!-- <dependency> <groupId>com.aliyun</groupId> <artifactId>aliyun-java-sdk-core</artifactId> 
+			<version>3.2.2</version> </dependency> <dependency> <groupId>com.aliyun</groupId> 
+			<artifactId>aliyun-java-sdk-dysmsapi</artifactId> <version>1.0.0</version> 
+			</dependency> -->
+		<dependency>
+			<groupId>com.vdurmont</groupId>
+			<artifactId>emoji-java</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+
 	</dependencies>
-	
-	
+
+
 </project>

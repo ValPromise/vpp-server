@@ -190,6 +190,7 @@ public class SendSmsUtil {
 			SmsSendRequest smsSingleRequest = new SmsSendRequest(ACCOUNT_CH, PASSWORD_CH, msg, mobile,report);
 			String requestJson = JSON.toJSONString(smsSingleRequest);
 			String response = HttpUtil.sendSmsByPost(CHUANG_LAN_URL_CH, requestJson);
+//			System.out.println(response);
 			SmsSendResponse smsSingleResponse = JSON.parseObject(response, SmsSendResponse.class);
 			if(smsSingleResponse.getCode().equals("0")){
 				result ="success";
@@ -222,8 +223,9 @@ public class SendSmsUtil {
 
     public static void main(String[] args){
           String code = getCaptcha();
-          System.out.println(sendSmsChuangLan("18244916590",code));
+          System.out.println(sendSmsChuangLan("15190496978",code));
           
+          System.out.println("112233".substring(2));
 //        System.out.println("验证码为：" + code);
 //        String templateCode =CAPTCHA_TEL_CODE;
 //        String recNum = "18244916590";

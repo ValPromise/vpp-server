@@ -25,9 +25,9 @@ public class AppSuggestionController extends CommonController {
     @RequestMapping("/insert")
     public ResultVo insertSuggestion(HttpServletResponse response, Suggestion suggestion, String token) {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if (!checkLogin(token)) {
-            return ResultVo.setResultError(getMessage("token"), TOKEN_FAIL_ERROR_CODE);
-        }
+//        if (!checkLogin(token)) {
+//            return ResultVo.setResultError(getMessage("token"), TOKEN_FAIL_ERROR_CODE);
+//        }
         String check = "^[a-zA-Z0-9][a-zA-Z0-9-_.]*@[a-zA-Z0-9]+\\.[a-zA-Z]+$";
         Pattern regex = Pattern.compile(check);
         Matcher matcher = regex.matcher(suggestion.getTitle());

@@ -12,13 +12,18 @@ import com.vpp.core.deposit.service.IDepositAccountService;
 @Service
 public class DepositAccountService implements IDepositAccountService {
 
-	@Autowired
-	private DepositAccountMapper depositAccountMapper;
-	
-	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public int insertDepositAccount(DepositAccount depositAccount) {
-		return depositAccountMapper.insertSelective(depositAccount);
-	}
+    @Autowired
+    private DepositAccountMapper depositAccountMapper;
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public int insertDepositAccount(DepositAccount depositAccount) {
+        return depositAccountMapper.insertSelective(depositAccount);
+    }
+
+    @Override
+    public DepositAccount findByAccount(String account) throws Exception {
+        return depositAccountMapper.findByAccount(account);
+    }
 
 }

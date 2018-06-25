@@ -1,7 +1,8 @@
 package com.vpp.core.standardized.order.bean;
 
 import java.math.BigDecimal;
-import java.util.Date;
+
+import com.vpp.common.utils.DateUtil;
 
 public class OrderCity {
     private Long id;
@@ -12,9 +13,9 @@ public class OrderCity {
 
     private Float threshold;
 
-    private Date stime;
+    private String stime;
 
-    private Date etime;
+    private String etime;
 
     private Byte opType;
 
@@ -60,19 +61,19 @@ public class OrderCity {
         this.threshold = threshold;
     }
 
-    public Date getStime() {
-        return stime;
+    public String getStime() {
+        return DateUtil.removeS(stime);
     }
 
-    public void setStime(Date stime) {
+    public void setStime(String stime) {
         this.stime = stime;
     }
 
-    public Date getEtime() {
-        return etime;
+    public String getEtime() {
+        return DateUtil.removeS(etime);
     }
 
-    public void setEtime(Date etime) {
+    public void setEtime(String etime) {
         this.etime = etime;
     }
 
@@ -123,4 +124,13 @@ public class OrderCity {
     public void setContractId(String contractId) {
         this.contractId = contractId == null ? null : contractId.trim();
     }
+
+    @Override
+    public String toString() {
+        return "OrderCity [id=" + id + ", innerOrderId=" + innerOrderId + ", cityId=" + cityId + ", threshold=" + threshold
+                + ", stime=" + stime + ", etime=" + etime + ", opType=" + opType + ", weatherType=" + weatherType
+                + ", triggerRuleParam=" + triggerRuleParam + ", payoutRuleParam=" + payoutRuleParam + ", contractPrice="
+                + contractPrice + ", contractId=" + contractId + "]";
+    }
+
 }

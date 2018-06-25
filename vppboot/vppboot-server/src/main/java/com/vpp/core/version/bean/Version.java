@@ -15,6 +15,9 @@ public class Version {
 
     private String versionCode;
 
+    // 版本序号，用于区分版本升级
+    private Integer versionNo;
+
     private Date pushTime;
 
     private Long creater;
@@ -112,4 +115,21 @@ public class Version {
     public void setUrl(String url) {
         this.url = url == null ? null : url.trim();
     }
+
+    public Integer getVersionNo() {
+        return versionNo;
+    }
+
+    public void setVersionNo(Integer versionNo) {
+        this.versionNo = versionNo;
+    }
+
+    @Override
+    public String toString() {
+        return "Version [id=" + id + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", description="
+                + description + ", versionName=" + versionName + ", versionCode=" + versionCode + ", versionNo=" + versionNo
+                + ", pushTime=" + pushTime + ", creater=" + creater + ", mender=" + mender + ", isPush=" + isPush + ", url="
+                + url + "]";
+    }
+
 }

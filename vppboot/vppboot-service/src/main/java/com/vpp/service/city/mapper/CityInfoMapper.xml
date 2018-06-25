@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vpp.service.city.mapper.CityInfoMapper">
+	<resultMap id="BaseResultMap" type="com.vpp.service.city.bean.CityInfo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="city_id_old" property="cityIdOld" jdbcType="VARCHAR" />
+		<result column="city_id" property="cityId" jdbcType="VARCHAR" />
+		<result column="en_name" property="enName" jdbcType="VARCHAR" />
+		<result column="cn_name" property="cnName" jdbcType="VARCHAR" />
+		<result column="pinyin" property="pinyin" jdbcType="VARCHAR" />
+		<result column="province_id" property="provinceId" jdbcType="BIGINT" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="longitude" property="longitude" jdbcType="VARCHAR" />
+		<result column="latitude" property="latitude" jdbcType="VARCHAR" />
+		<result column="country_id" property="countryId" jdbcType="BIGINT" />
+		<result column="weather_url" property="weatherUrl" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, city_id_old, city_id, en_name, cn_name, pinyin,
+		province_id, area,
+		longitude,
+		latitude, country_id, weather_url, sort
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from city_info
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		city_info
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.vpp.service.city.bean.CityInfo">
+		insert into city_info (id,
+		city_id_old, city_id,
+		en_name, cn_name, pinyin,
+		province_id, area,
+		longitude,
+		latitude, country_id, weather_url,
+		sort)
+		values
+		(#{id,jdbcType=BIGINT}, #{cityIdOld,jdbcType=VARCHAR},
+		#{cityId,jdbcType=VARCHAR},
+		#{enName,jdbcType=VARCHAR},
+		#{cnName,jdbcType=VARCHAR}, #{pinyin,jdbcType=VARCHAR},
+		#{provinceId,jdbcType=BIGINT}, #{area,jdbcType=VARCHAR},
+		#{longitude,jdbcType=VARCHAR},
+		#{latitude,jdbcType=VARCHAR},
+		#{countryId,jdbcType=BIGINT}, #{weatherUrl,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.vpp.service.city.bean.CityInfo">
+		insert into city_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="cityIdOld != null">
+				city_id_old,
+			</if>
+			<if test="cityId != null">
+				city_id,
+			</if>
+			<if test="enName != null">
+				en_name,
+			</if>
+			<if test="cnName != null">
+				cn_name,
+			</if>
+			<if test="pinyin != null">
+				pinyin,
+			</if>
+			<if test="provinceId != null">
+				province_id,
+			</if>
+			<if test="area != null">
+				area,
+			</if>
+			<if test="longitude != null">
+				longitude,
+			</if>
+			<if test="latitude != null">
+				latitude,
+			</if>
+			<if test="countryId != null">
+				country_id,
+			</if>
+			<if test="weatherUrl != null">
+				weather_url,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="cityIdOld != null">
+				#{cityIdOld,jdbcType=VARCHAR},
+			</if>
+			<if test="cityId != null">
+				#{cityId,jdbcType=VARCHAR},
+			</if>
+			<if test="enName != null">
+				#{enName,jdbcType=VARCHAR},
+			</if>
+			<if test="cnName != null">
+				#{cnName,jdbcType=VARCHAR},
+			</if>
+			<if test="pinyin != null">
+				#{pinyin,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceId != null">
+				#{provinceId,jdbcType=BIGINT},
+			</if>
+			<if test="area != null">
+				#{area,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				#{longitude,jdbcType=VARCHAR},
+			</if>
+			<if test="latitude != null">
+				#{latitude,jdbcType=VARCHAR},
+			</if>
+			<if test="countryId != null">
+				#{countryId,jdbcType=BIGINT},
+			</if>
+			<if test="weatherUrl != null">
+				#{weatherUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vpp.service.city.bean.CityInfo">
+		update city_info
+		<set>
+			<if test="cityIdOld != null">
+				city_id_old = #{cityIdOld,jdbcType=VARCHAR},
+			</if>
+			<if test="cityId != null">
+				city_id = #{cityId,jdbcType=VARCHAR},
+			</if>
+			<if test="enName != null">
+				en_name = #{enName,jdbcType=VARCHAR},
+			</if>
+			<if test="cnName != null">
+				cn_name = #{cnName,jdbcType=VARCHAR},
+			</if>
+			<if test="pinyin != null">
+				pinyin = #{pinyin,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceId != null">
+				province_id = #{provinceId,jdbcType=BIGINT},
+			</if>
+			<if test="area != null">
+				area = #{area,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				longitude = #{longitude,jdbcType=VARCHAR},
+			</if>
+			<if test="latitude != null">
+				latitude = #{latitude,jdbcType=VARCHAR},
+			</if>
+			<if test="countryId != null">
+				country_id = #{countryId,jdbcType=BIGINT},
+			</if>
+			<if test="weatherUrl != null">
+				weather_url = #{weatherUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.vpp.service.city.bean.CityInfo">
+		update city_info
+		set city_id_old = #{cityIdOld,jdbcType=VARCHAR},
+		city_id =
+		#{cityId,jdbcType=VARCHAR},
+		en_name = #{enName,jdbcType=VARCHAR},
+		cn_name = #{cnName,jdbcType=VARCHAR},
+		pinyin =
+		#{pinyin,jdbcType=VARCHAR},
+		province_id =
+		#{provinceId,jdbcType=BIGINT},
+		area = #{area,jdbcType=VARCHAR},
+		longitude = #{longitude,jdbcType=VARCHAR},
+		latitude =
+		#{latitude,jdbcType=VARCHAR},
+		country_id =
+		#{countryId,jdbcType=BIGINT},
+		weather_url =
+		#{weatherUrl,jdbcType=VARCHAR},
+		sort = #{sort,jdbcType=INTEGER}
+		where id
+		= #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="findCityInfoByCityId" resultMap="BaseResultMap">
+		select *
+		from city_info
+		where city_id = #{cityId} or city_id_old =
+		#{cityId}
+	</select>
+	<select id="findCityInfoByCnName" resultMap="BaseResultMap">
+		select * from
+		city_info
+		where cn_name = #{cnName}
+	</select>
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from
+		city_info
+	</select>
+
+	<select id="findListByCityIds" resultType="com.vpp.service.city.bean.CityVo">
+		select city_id as cityId,cn_name as cnName,UPPER(LEFT(en_name,1)) as initial from
+		city_info where city_id in
+		<foreach collection="cityIds" item="cityId" index="index"
+			open="(" close=")" separator=",">
+			#{cityId}
+		</foreach>
+	</select>
+</mapper>

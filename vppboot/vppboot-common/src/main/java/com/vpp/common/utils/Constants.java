@@ -65,7 +65,7 @@ public interface Constants {
     }
 
     /**
-     * 创建钱包默认密码， 20180523
+     * 创建钱包默认密码， 20180523日修改
      */
     public static final String DEFAULT_ACCOUNT_PASSWORD = "vpp2018tqb2018";
 

@@ -46,7 +46,17 @@ public class AppUtils {
             String content = weatherName + symbol + threshold + unit;
             String amount = vo.getPayFee().floatValue() + "-" + vo.getMaxPayout().floatValue();
 
-            String status = vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES ? "履约" : "等待判定";
+            String status = "";
+            if (vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES) {
+                if (null != vo.getPayoutFee() && 0 < vo.getPayoutFee().intValue()) {
+                    status = "已判定，已履行";
+                } else {
+                    status = "已判定，无需履行";
+                }
+            } else {
+                status = "等待判定";
+            }
+
             AppOrderListVo appListVo = new AppOrderListVo();
             appListVo.setInnerOrderId(vo.getInnerOrderId());
             appListVo.setTitle(title);
@@ -73,13 +83,23 @@ public class AppUtils {
             weatherContent = weatherName + "为" + realWeather + unit;
         }
 
-        String status = vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES ? "履约" : "等待判定";
+        String status = "";
+        if (vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES) {
+            if (null != vo.getPayoutFee() && 0 < vo.getPayoutFee().intValue()) {
+                status = "已判定，已履行";
+            } else {
+                status = "已判定，无需履行";
+            }
+        } else {
+            status = "等待判定";
+        }
+
         AppOrderInfoVo appVo = new AppOrderInfoVo();
         appVo.setInnerOrderId(vo.getInnerOrderId());
         appVo.setGmtCreate(vo.getGmtCreate());
         appVo.setStatus(status);
         appVo.setCityName(cityCnName);
-        appVo.setStime(vo.getStime());
+        appVo.setStime(vo.getStime().substring(0, 10));
         appVo.setContractContent(contractContent);
         appVo.setWeatherContent(weatherContent);
         appVo.setMaxPayout(vo.getMaxPayout());
@@ -89,4 +109,8 @@ public class AppUtils {
 
         return appVo;
     }
+
+    // public static void main(String[] args) {
+    // System.out.println("aabbcc".substring(0, 2));
+    // }
 }

@@ -35,8 +35,8 @@ public class AppLoginTest {
     @Autowired
     MockHttpServletResponse response;
 
-    String mobile = "8617322370002";
-    String password = "8617322370002";
+    String mobile = "8617322370006";
+    String password = "123456";
 
     @Test
     public void getMobileCode() throws Exception {
@@ -50,10 +50,29 @@ public class AppLoginTest {
         Customer customer = new Customer();
         customer.setMobile(mobile);
         customer.setPassword(password);
-        customer.setInviteCode("SNu7");
-        String code = "4130";
+        customer.setInviteCode("525z");
+        String code = "5234";
         ResultVo res = appLoginController.register(customer, code, response);
         logger.debug(res);
+    }
+    
+    @Test
+    public void login() throws Exception {
+        ResultVo res = appLoginController.login(mobile, password, response);
+        
+        logger.debug("-----");
+        logger.debug(res);
+        logger.debug("-----");
+    }
+
+    @Test
+    public void loginCode() throws Exception {
+        String code = "3252";
+        ResultVo res = appLoginController.loginCode(mobile, code, response);
+
+        logger.debug("-----");
+        logger.debug(res);
+        logger.debug("-----");
     }
 
 }

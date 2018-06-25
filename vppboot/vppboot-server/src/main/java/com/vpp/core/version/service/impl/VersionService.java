@@ -1,5 +1,6 @@
 package com.vpp.core.version.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,4 +38,9 @@ public class VersionService implements IVersionService {
 	public Version selectByPrimaryKey(Long id) {
 		return versionMapper.selectByPrimaryKey(id);
 	}
+
+    @Override
+    public List<Version> findByVersionNo(int versionNo) {
+        return versionMapper.findByVersionNo(versionNo);
+    }
 }

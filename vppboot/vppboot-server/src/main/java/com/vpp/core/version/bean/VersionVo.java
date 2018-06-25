@@ -2,10 +2,10 @@ package com.vpp.core.version.bean;
 
 import java.io.Serializable;
 
-public class VersionVo implements Serializable{
-	private static final long serialVersionUID = 7569824210638279974L;
+public class VersionVo implements Serializable {
+    private static final long serialVersionUID = 7569824210638279974L;
 
-	private Long id;
+    private Long id;
 
     private String gmtCreate;
 
@@ -17,121 +17,141 @@ public class VersionVo implements Serializable{
 
     private String versionCode;
 
+    // 版本序号，用于区分版本升级
+    private Integer versionNo;
+
     private String pushTime;
 
     private Long creater;
-    
+
     private String createrName;
 
     private Long mender;
-    
+
     private String menderName;
-    
+
     private Byte isPush;
 
     private String url;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getGmtCreate() {
-		return gmtCreate;
-	}
+    public String getGmtCreate() {
+        return gmtCreate;
+    }
 
-	public void setGmtCreate(String gmtCreate) {
-		this.gmtCreate = gmtCreate;
-	}
+    public void setGmtCreate(String gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
 
-	public String getGmtModified() {
-		return gmtModified;
-	}
+    public String getGmtModified() {
+        return gmtModified;
+    }
 
-	public void setGmtModified(String gmtModified) {
-		this.gmtModified = gmtModified;
-	}
+    public void setGmtModified(String gmtModified) {
+        this.gmtModified = gmtModified;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getVersionName() {
-		return versionName;
-	}
+    public String getVersionName() {
+        return versionName;
+    }
 
-	public void setVersionName(String versionName) {
-		this.versionName = versionName;
-	}
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
+    }
 
-	public String getVersionCode() {
-		return versionCode;
-	}
+    public String getVersionCode() {
+        return versionCode;
+    }
 
-	public void setVersionCode(String versionCode) {
-		this.versionCode = versionCode;
-	}
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
+    }
 
-	public String getPushTime() {
-		return pushTime;
-	}
+    public String getPushTime() {
+        return pushTime;
+    }
 
-	public void setPushTime(String pushTime) {
-		this.pushTime = pushTime;
-	}
+    public void setPushTime(String pushTime) {
+        this.pushTime = pushTime;
+    }
 
-	public Long getCreater() {
-		return creater;
-	}
+    public Long getCreater() {
+        return creater;
+    }
 
-	public void setCreater(Long creater) {
-		this.creater = creater;
-	}
+    public void setCreater(Long creater) {
+        this.creater = creater;
+    }
 
-	public String getCreaterName() {
-		return createrName;
-	}
+    public String getCreaterName() {
+        return createrName;
+    }
 
-	public void setCreaterName(String createrName) {
-		this.createrName = createrName;
-	}
+    public void setCreaterName(String createrName) {
+        this.createrName = createrName;
+    }
 
-	public Long getMender() {
-		return mender;
-	}
+    public Long getMender() {
+        return mender;
+    }
 
-	public void setMender(Long mender) {
-		this.mender = mender;
-	}
+    public void setMender(Long mender) {
+        this.mender = mender;
+    }
 
-	public String getMenderName() {
-		return menderName;
-	}
+    public String getMenderName() {
+        return menderName;
+    }
 
-	public void setMenderName(String menderName) {
-		this.menderName = menderName;
-	}
+    public void setMenderName(String menderName) {
+        this.menderName = menderName;
+    }
 
-	public Byte getIsPush() {
-		return isPush;
-	}
+    public Byte getIsPush() {
+        return isPush;
+    }
 
-	public void setIsPush(Byte isPush) {
-		this.isPush = isPush;
-	}
+    public void setIsPush(Byte isPush) {
+        this.isPush = isPush;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Integer getVersionNo() {
+        return versionNo;
+    }
+
+    public void setVersionNo(Integer versionNo) {
+        this.versionNo = versionNo;
+    }
+
+    @Override
+    public String toString() {
+        return "VersionVo [id=" + id + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", description="
+                + description + ", versionName=" + versionName + ", versionCode=" + versionCode + ", versionNo=" + versionNo
+                + ", pushTime=" + pushTime + ", creater=" + creater + ", createrName=" + createrName + ", mender=" + mender
+                + ", menderName=" + menderName + ", isPush=" + isPush + ", url=" + url + "]";
+    }
+
 }

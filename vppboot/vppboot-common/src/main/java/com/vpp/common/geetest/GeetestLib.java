@@ -410,9 +410,9 @@ public class GeetestLib {
      * @param message
      */
     public void gtlog(String message) {
-        if (debugCode) {
-            System.out.println("gtlog: " + message);
-        }
+//        if (debugCode) {
+//            System.out.println("gtlog: " + message);
+//        }
     }
 
     protected boolean checkResultByPrivate(String challenge, String validate) {

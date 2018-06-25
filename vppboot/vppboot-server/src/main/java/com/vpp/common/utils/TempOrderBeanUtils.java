@@ -59,11 +59,12 @@ public class TempOrderBeanUtils {
         String threshold = searchObj.get("strike").toString();
         String time = searchObj.get("time").toString();
         Date stime = DateUtil.parseDate(time);
+
         Date etime = DateUtil.parseDate(DateUtil.addDate(time, 1));
         OrderList order = new OrderList();
         order.setBuyCount(buyCnt);
         order.setCustomerId(customerId);
-        order.setGmtCreate(new Date());
+        order.setGmtCreate(DateUtil.getCurrentDateTimeLocal());
         order.setInnerOrderId(contractId);
         order.setMaxPayout(priceMultiplyBuyCnt(parseString(payoff), buyCnt));
         order.setOpType(OP_TYPE);
@@ -72,12 +73,12 @@ public class TempOrderBeanUtils {
         order.setOrderPrice(priceMultiplyBuyCnt(parseString(price), buyCnt));
         order.setTriggerRuleParam(threshold);
         order.setOrderState(DEFAULT_ORDER_STATE);
-        order.setStime(stime);
-        order.setEtime(etime);
+        order.setStime(DateUtil.format(stime, DateUtil.YMD_DATE_PATTERN));
+        order.setEtime(DateUtil.format(etime, DateUtil.YMD_DATE_PATTERN));
         order.setTriggerCheckState(DEFAULT_TRIGGER_CHECK_STATE);
-        order.setProductId(ConstantsOrder.Product.PRODUCT_ID_TEMP);
+        order.setProductId(ConstantsTemp.PRODUCT_ID);
         order.setPayState(ConstantsOrder.PAY_STATE_YES);
-        order.setPayTime(new Date());
+        order.setPayTime(DateUtil.getCurrentDateTimeLocal());
         order.setPayFee(order.getOrderPrice());
 
         return order;
@@ -103,8 +104,8 @@ public class TempOrderBeanUtils {
         city.setInnerOrderId(contractId);
         city.setCityId(cityId);
         city.setThreshold(Float.valueOf(threshold));
-        city.setStime(stime);
-        city.setEtime(etime);
+        city.setStime(DateUtil.format(stime, DateUtil.YMD_DATE_PATTERN));
+        city.setEtime(DateUtil.format(etime, DateUtil.YMD_DATE_PATTERN));
         city.setOpType(OP_TYPE);
         city.setWeatherType(WEATHER_TYPE);
         city.setContractId(contractId);

@@ -18,9 +18,9 @@ import com.github.pagehelper.PageHelper;
 import com.vpp.common.utils.DateUtil;
 import com.vpp.common.vo.OrderInfoVo;
 import com.vpp.common.vo.OrderVo;
+import com.vpp.core.cashlog.service.ICustomerCashLogService;
 import com.vpp.core.customer.bean.Customer;
 import com.vpp.core.customer.mapper.CustomerMapper;
-import com.vpp.core.customer.service.ICustomerService;
 import com.vpp.core.standardized.order.bean.OrderCity;
 import com.vpp.core.standardized.order.bean.OrderList;
 import com.vpp.core.standardized.order.mapper.OrderCityMapper;
@@ -39,6 +39,8 @@ public class OrderService implements IOrderService {
     private IProductConfigService productConfigService;
     @Autowired
     private CustomerMapper customerMapper;
+    @Autowired
+    private ICustomerCashLogService customerCashLogService;
 
     @Override
     public Page<OrderVo> getOrderList(Integer currentPage, Integer pageSize, Map<String, Object> params) {
@@ -151,15 +153,10 @@ public class OrderService implements IOrderService {
     public void tempContractPay(OrderList orderList, OrderCity orderCity, Customer customer) throws Exception {
         orderListMapper.insertSelective(orderList);
         orderCityMapper.insertSelective(orderCity);
-
-        // String aaa = "asdfasd";
-        // Long a = Long.valueOf(aaa);
-        // customer.setNickName(
-        // "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        // 事物回滚
         customerMapper.updateByPrimaryKeySelective(customer);
-
-        String time = DateUtil.format(orderList.getStime(), DateUtil.YMD_DATE_PATTERN);// 2018-05-27
+        customerCashLogService.insertPay(orderList.getCustomerId(), orderList.getPayFee(),
+                orderList.getInnerOrderId() + "高温产品支付");
+        String time = orderList.getStime();// 2018-05-27
         // 数据回写入redis做风控
         String saleCacheKey = SALEINFO_VPP_PRE + orderCity.getCityId() + "_"
                 + DateUtil.strToStr(time, DateUtil.YMD_DATE_PATTERN, DateUtil.YMD_DATE_TIME_PATTERN);
@@ -168,5 +165,42 @@ public class OrderService implements IOrderService {
         buyRedis.opsForHash().put(saleCacheKey, orderCity.getThreshold().toString(),
                 String.valueOf(saleCnt + orderList.getBuyCount()));
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void rainContractPay(OrderList orderList, OrderCity orderCity, Customer customer) throws Exception {
+        orderListMapper.insertSelective(orderList);
+        orderCityMapper.insertSelective(orderCity);
+        customerMapper.updateByPrimaryKeySelective(customer);
+        customerCashLogService.insertPay(orderList.getCustomerId(), orderList.getPayFee(),
+                orderList.getInnerOrderId() + "降雨产品支付");
+    }
+
+    @Override
+    public Page<OrderInfoVo> findVosByCondition(Integer currentPage, Integer pageSize, Map<String, Object> params) {
+        PageHelper.startPage(currentPage, pageSize);
+        return orderListMapper.findVosByCondition(params);
+    }
+
+    @Override
+    public Integer fingRiskCountByCustomerIdCityId(String productId, Long customerId, String cityId, String date)
+            throws Exception {
+        return orderListMapper.fingRiskCountByCustomerIdCityId(productId, customerId, cityId, date);
+    }
+
+    @Override
+    public Integer fingRiskCountByCustomerId(String productId, Long customerId, String date) throws Exception {
+        return orderListMapper.fingRiskCountByCustomerId(productId, customerId, date);
+    }
+
+    @Override
+    public Integer fingRiskCountByProductId(String productId, String cityId, String date) throws Exception {
+        return orderListMapper.fingRiskCountByProductId(productId, cityId, date);
+    }
+
+    @Override
+    public Integer fingRiskCountByParams(Map<String, Object> params) throws Exception {
+        return orderListMapper.fingRiskCountByParams(params);
     }
 }

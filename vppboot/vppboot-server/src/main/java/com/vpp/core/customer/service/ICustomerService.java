@@ -3,7 +3,9 @@ package com.vpp.core.customer.service;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import com.github.pagehelper.Page;
 import com.vpp.core.customer.bean.Customer;
+import com.vpp.core.deposit.bean.DepositAccount;
 
 public interface ICustomerService {
     /**
@@ -12,7 +14,7 @@ public interface ICustomerService {
      * @param customer
      * @return
      */
-    int register(Customer customer);
+    int register(Customer customer, DepositAccount depositAccount, Customer inviteCustomer) throws Exception;
 
     /**
      * 查看会员详情信息
@@ -36,16 +38,29 @@ public interface ICustomerService {
      * @param userName
      * @return
      */
-    Customer selectCustomerByUserName(String userName);
+    Customer selectCustomerByMobile(String userName);
 
     /**
-     * 更新会员账户余额 TODO 添加方法注释
+     * 收入资金，修改用户余额，添加资金流水
      * 
-     * @author cgp
-     * @param customer
+     * @author Lxl
+     * @param id 客户ID
+     * @param income 累加余额
+     * @param desc 资金描述，用于资金流水
      * @return
      */
-    int updateCustomerBalance(Long id, BigDecimal addBalance);
+    int incomeBalance(Long id, BigDecimal income, String desc);
+
+    /**
+     * 支出资金，修改客户余额，添加资金流水
+     * 
+     * @author Lxl
+     * @param id
+     * @param expenditure
+     * @param desc
+     * @return
+     */
+    int expenditureBalance(Long id, BigDecimal expenditure, String desc) throws Exception;
 
     /**
      * 根据邀请码查询客户信息
@@ -97,10 +112,32 @@ public interface ICustomerService {
     /**
      * 修改支付密码
      * 
-     * @param map
+     * @author Lxl
+     * @param id
+     * @param payPassword
      * @return
      */
-    int updatePayPassword(Map<String, Object> map);
+    int updatePayPassword(Long id, String payPassword);
+
+    /**
+     * 修改密码
+     * 
+     * @author Lxl
+     * @param id
+     * @param password
+     * @return
+     */
+    int updatePassword(Long id, String password);
+
+    /**
+     * 修改手机号码
+     * 
+     * @author Lxl
+     * @param id
+     * @param mobile
+     * @return
+     */
+    int updateMobile(Long id, String mobile);
 
     /**
      * 统计邀请码使用个数
@@ -119,5 +156,17 @@ public interface ICustomerService {
      * @throws Exception
      */
     Customer findByMobile(String mobile) throws Exception;
+
+    /**
+     * 分页查询
+     * 
+     * @author Lxl
+     * @param currentPage
+     * @param pageSize
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    Page<Customer> findListByCondition(Integer currentPage, Integer pageSize, Map<String, Object> params) throws Exception;
 
 }

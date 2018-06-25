@@ -1,9 +1,13 @@
 package com.vpp.core.standardized.order.bean;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
-public class OrderList {
+import com.vpp.common.utils.DateUtil;
+
+public class OrderList implements Serializable {
+    private static final long serialVersionUID = 4083727217285853864L;
+
     private Long id;
 
     private Long customerId;
@@ -14,7 +18,7 @@ public class OrderList {
 
     private String templateId;
 
-    private Date gmtCreate;
+    private String gmtCreate;
 
     private Integer buyCount;
 
@@ -22,7 +26,7 @@ public class OrderList {
 
     private BigDecimal payFee;
 
-    private Date payTime;
+    private String payTime;
 
     private String payReceipt;
 
@@ -32,9 +36,9 @@ public class OrderList {
 
     private BigDecimal realPayoutFee;
 
-    private Date stime;
+    private String stime;
 
-    private Date etime;
+    private String etime;
 
     private Byte opType;
 
@@ -92,14 +96,6 @@ public class OrderList {
         this.templateId = templateId == null ? null : templateId.trim();
     }
 
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
     public Integer getBuyCount() {
         return buyCount;
     }
@@ -122,14 +118,6 @@ public class OrderList {
 
     public void setPayFee(BigDecimal payFee) {
         this.payFee = payFee;
-    }
-
-    public Date getPayTime() {
-        return payTime;
-    }
-
-    public void setPayTime(Date payTime) {
-        this.payTime = payTime;
     }
 
     public String getPayReceipt() {
@@ -162,22 +150,6 @@ public class OrderList {
 
     public void setRealPayoutFee(BigDecimal realPayoutFee) {
         this.realPayoutFee = realPayoutFee;
-    }
-
-    public Date getStime() {
-        return stime;
-    }
-
-    public void setStime(Date stime) {
-        this.stime = stime;
-    }
-
-    public Date getEtime() {
-        return etime;
-    }
-
-    public void setEtime(Date etime) {
-        this.etime = etime;
     }
 
     public Byte getOpType() {
@@ -243,4 +215,48 @@ public class OrderList {
     public void setOrderDesc(String orderDesc) {
         this.orderDesc = orderDesc == null ? null : orderDesc.trim();
     }
+
+    public String getGmtCreate() {
+        return DateUtil.removeS(gmtCreate);
+    }
+
+    public void setGmtCreate(String gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public String getPayTime() {
+        return DateUtil.removeS(payTime);
+    }
+
+    public void setPayTime(String payTime) {
+        this.payTime = payTime;
+    }
+
+    public String getStime() {
+        return DateUtil.removeS(stime);
+    }
+
+    public void setStime(String stime) {
+        this.stime = stime;
+    }
+
+    public String getEtime() {
+        return DateUtil.removeS(etime);
+    }
+
+    public void setEtime(String etime) {
+        this.etime = etime;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderList [id=" + id + ", customerId=" + customerId + ", innerOrderId=" + innerOrderId + ", productId="
+                + productId + ", templateId=" + templateId + ", gmtCreate=" + gmtCreate + ", buyCount=" + buyCount
+                + ", orderPrice=" + orderPrice + ", payFee=" + payFee + ", payTime=" + payTime + ", payReceipt=" + payReceipt
+                + ", payoutFee=" + payoutFee + ", maxPayout=" + maxPayout + ", realPayoutFee=" + realPayoutFee + ", stime="
+                + stime + ", etime=" + etime + ", opType=" + opType + ", weatherType=" + weatherType + ", triggerRuleParam="
+                + triggerRuleParam + ", payoutRuleParam=" + payoutRuleParam + ", payState=" + payState + ", orderState="
+                + orderState + ", triggerCheckState=" + triggerCheckState + ", orderDesc=" + orderDesc + "]";
+    }
+
 }

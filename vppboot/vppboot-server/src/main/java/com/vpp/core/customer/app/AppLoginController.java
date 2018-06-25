@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,7 +42,9 @@ public class AppLoginController extends CommonController {
     private IDepositAccountService depositAccountService;
     @Autowired
     private GeetestHandle geetestHandle;
-
+    //获取配置文件 development , production , test
+    @Value("${spring.profiles.active}")
+    private String profilesActive;
     /**
      * 邀请人数上限
      */
@@ -58,10 +61,11 @@ public class AppLoginController extends CommonController {
     public ResultVo getMobileCode(String mobile, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         // 是否通过安全验证
-        // boolean suc = geetestHandle.isSuccess(mobile);
-        // if (!suc) {
-        // return ResultVo.setResultError(getMessage("geetest_validate_fail"));
-        // }
+        logger.debug("mobile::{}", mobile);
+        boolean suc = geetestHandle.isSuccess(mobile);
+        if (!suc) {
+            return ResultVo.setResultError(getMessage("geetest_validate_fail"));
+        }
 
         if (StringUtils.isEmpty(mobile)) {
             return ResultVo.setResultError(getMessage("mobile_null"));
@@ -71,7 +75,16 @@ public class AppLoginController extends CommonController {
         }
         String code = SendSmsUtil.getCaptcha();
         logger.debug("code:::{}", code);
-        String result = SendSmsUtil.sendSmsIntl(mobile, code);
+        // sendSmsChuangLan
+        String result = null;
+        if (0 == mobile.indexOf("86")) {
+            // 发送普通短信
+            result = SendSmsUtil.sendSmsChuangLan(mobile.substring(2), code);
+        } else {
+            // 国际短信
+            result = SendSmsUtil.sendSmsIntl(mobile, code);
+        }
+
         if (result.equals("fail")) { // 短信发送失败
             return ResultVo.setResultError(getMessage("send_sms_fail"));
         }
@@ -93,10 +106,10 @@ public class AppLoginController extends CommonController {
         response.addHeader("Access-Control-Allow-Origin", "*");
 
         // 是否通过安全验证
-        // boolean suc = geetestHandle.isSuccess(customer.getMobile());
-        // if (!suc) {
-        // return ResultVo.setResultError(getMessage("geetest_validate_fail"));
-        // }
+        boolean suc = geetestHandle.isSuccess(customer.getMobile());
+        if (!suc) {
+            return ResultVo.setResultError(getMessage("geetest_validate_fail"));
+        }
 
         String mobile = customer.getMobile(); // 手机号码
         String inviteCode = customer.getInviteCode(); // 邀请码
@@ -113,25 +126,27 @@ public class AppLoginController extends CommonController {
         if (StringUtils.isEmpty(password)) {
             return ResultVo.setResultError(getMessage("login_password_null"));
         }
-        Customer t = customerService.selectCustomerByUserName(mobile);
+        Customer t = customerService.selectCustomerByMobile(mobile);
         if (t != null) {
             if (mobile.equals(t.getMobile())) { // 手机号已被注册
                 return ResultVo.setResultError(getMessage("mobile_used"));
             }
         }
+        Customer inviteCustomer = null;
         if (!StringUtils.isBlank(inviteCode)) { // 没有邀请码，自动生成一个邀请码
-            Customer checkCustomer = customerService.selectByCode(inviteCode);
-            if (checkCustomer == null) {
+            inviteCustomer = customerService.selectByCode(inviteCode);
+            if (inviteCustomer == null) {
                 return ResultVo.setResultError(getMessage("invitation_code_error"));
             } else {
                 int count = customerService.countInviteCode(inviteCode);
-                if (count >= checkCustomer.getInviteUp()) { // 邀请码达到上线
-                    return ResultVo.setResultError(getMessage("invitation_code_finish"));
+                if (count >= inviteCustomer.getInviteUp()) { // 邀请码达到上线
+                    // return ResultVo.setResultError(getMessage("invitation_code_finish"));
+                    inviteCustomer = null;
                 }
                 customer.setInviteFrom(inviteCode);
             }
         }
-        // 生成钱包
+        // 生成充值钱包
         String account = EthController.createAccount();
         if (StringUtils.isEmpty(account)) {
             return ResultVo.setResultError(getMessage("create_account_fail"));
@@ -140,36 +155,29 @@ public class AppLoginController extends CommonController {
             return ResultVo.setResultError(getMessage("create_account_fail"));
         }
 
-        customer.setInviteCode(getInviteCode(4));
+        customer.setInviteCode(getInviteCode(5));
         customer.setDepositAddress(account);
         customer.setPassword(MD5Utils.getMD5String(password));
         customer.setInviteUp(INVITE_UP);
         customer.setBalance(new BigDecimal(0));
+        customer.setGmtCreate(new Date());
 
-        int res = 1;
         try {
-            customerService.register(customer);
             DepositAccount depositAccount = new DepositAccount();
             depositAccount.setCustomerId(customer.getId());
             depositAccount.setGmtCreate(new Date());
-            depositAccount.setAccount(mobile);
-            depositAccountService.insertDepositAccount(depositAccount);
+            depositAccount.setAccount(account);
+            customerService.register(customer, depositAccount, inviteCustomer);
+
+            return ResultVo.setResultSuccess();
         } catch (Exception e) {
-            res = 0;
-            logger.error("发生异常：" + e.getMessage());
-        }
-        if (res > 0) {
-            String token = setLoginToken(customer.getId().toString());
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("token", token);
-            logger.debug("registre success...");
-            return ResultVo.setResultSuccess(getMessage("register_success"), map);
+            logger.error("register error :::{}", e.getMessage());
         }
         return ResultVo.setResultError(getMessage("register_error"));
     }
 
     /**
-     * 登录
+     * 登录-密码登录
      * 
      * @param mobile 手机号码
      * @param code 手机验证码
@@ -180,9 +188,9 @@ public class AppLoginController extends CommonController {
     @RequestMapping("/login")
     public ResultVo login(String mobile, String password, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        // 是否通过安全验证
+        // 判断是否通过安全验证，正式环境需要打开
         boolean suc = geetestHandle.isSuccess(mobile);
-        if (!suc) {
+        if (!suc && "production".equals(profilesActive)) {
             return ResultVo.setResultError(getMessage("geetest_validate_fail"));
         }
 
@@ -192,16 +200,75 @@ public class AppLoginController extends CommonController {
         if (StringUtils.isEmpty(password)) {
             return ResultVo.setResultError(getMessage("login_password_null"));
         }
-        Customer customer = customerService.selectCustomerByUserName(mobile);
+        Customer customer = customerService.selectCustomerByMobile(mobile);
         if (customer == null) { // 账号不存在，请注册
             return ResultVo.setResultError(getMessage("account_no"));
         }
-        if (!customer.getPassword().equals(MD5Utils.getMD5String(password))) {
+        if (!MD5Utils.getMD5String(password).equals(customer.getPassword())) {
             return ResultVo.setResultError(getMessage("login_password_error"));
         }
         String token = setLoginToken(customer.getId().toString()); // 登录缓存token
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("token", token);
+        // 判断是否已经设置支付密码
+        if (StringUtils.isNotBlank(customer.getPayPassword())) {
+            map.put("payPasswordExist", 1);
+        } else {
+            map.put("payPasswordExist", 0);
+        }
+        if (StringUtils.isNotBlank(customer.getPassword())) {
+            map.put("passwordExist", 1);
+        } else {
+            map.put("passwordExist", 0);
+        }
+
+        ResultVo resultVo = ResultVo.setResultSuccess("登录成功", map);
+        logger.info("登录返回结果" + new Gson().toJson(resultVo));
+        return resultVo;
+    }
+
+    /**
+     * 登录-验证码登录
+     * 
+     * @param mobile 手机号码
+     * @param code 手机验证码
+     * @param imei 手机串码
+     * @param response
+     * @return
+     */
+    @RequestMapping("/loginCode")
+    public ResultVo loginCode(String mobile, String code, HttpServletResponse response) {
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        // 判断是否通过安全验证，正式环境需要打开
+        boolean suc = geetestHandle.isSuccess(mobile);
+        if (!suc) {
+            return ResultVo.setResultError(getMessage("geetest_validate_fail"));
+        }
+        if (!SendSmsUtil.isMobile(mobile)) {
+            return ResultVo.setResultError(getMessage("mobile_format_error"));
+        }
+        if (!checkMobileCode(mobile, code)) {
+            return ResultVo.setResultError(getMessage("mobile_check_error"));
+        }
+        Customer customer = customerService.selectCustomerByMobile(mobile);
+        if (customer == null) { // 账号不存在，请注册
+            return ResultVo.setResultError(getMessage("account_no"));
+        }
+        String token = setLoginToken(customer.getId().toString()); // 登录缓存token
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("token", token);
+        // 判断是否已经设置支付密码
+        if (StringUtils.isNotBlank(customer.getPayPassword())) {
+            map.put("payPasswordExist", 1);
+        } else {
+            map.put("payPasswordExist", 0);
+        }
+        if (StringUtils.isNotBlank(customer.getPassword())) {
+            map.put("passwordExist", 1);
+        } else {
+            map.put("passwordExist", 0);
+        }
+
         ResultVo resultVo = ResultVo.setResultSuccess("登录成功", map);
         logger.info("登录返回结果" + new Gson().toJson(resultVo));
         return resultVo;
@@ -217,9 +284,9 @@ public class AppLoginController extends CommonController {
     @RequestMapping("/loginOut")
     public ResultVo loginOut(String token, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if (!checkLogin(token)) {
-            return ResultVo.setResultError(getMessage("token"), TOKEN_FAIL_ERROR_CODE);
-        }
+        // if (!checkLogin(token)) {
+        // return ResultVo.setResultError(getMessage("token"), TOKEN_FAIL_ERROR_CODE);
+        // }
         boolean bool = delLoginToken(token);
         if (!bool) {
             return ResultVo.setResultError("fail");

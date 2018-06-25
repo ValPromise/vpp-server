@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.util.Assert;
+import sun.applet.Main;
 
 /**
  * <p>
@@ -30,7 +31,7 @@ import org.springframework.util.Assert;
  * <p>
  * Company:
  * </p>
- * 
+ *
  * @author sbruan
  * @version 1.0
  */
@@ -40,6 +41,10 @@ public class DateUtil {
      * yyyy-MM-dd HH:mm:ss
      */
     public static final String LONG_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    /**
+     * yyyy-MM-dd HH:mm:ss.SSS
+     */
+    public static final String LONG_DATE_TIME_PATTERN_SSS1 = "yyyy-MM-dd HH:mm:ss.SSS";
 
     /**
      * yyyyMMddHHmmssSSS
@@ -56,19 +61,22 @@ public class DateUtil {
      */
     public static final String YMD_DATE_PATTERN = "yyyy-MM-dd";
 
+    /**
+     * yyyy-MM-dd HH
+     */
+    public static final String YMDH_DATE_PATTERN = "yyyy-MM-dd HH";
 
     /**
      * yyyy-MM
      */
     public static final String YM_DATE_PATTERN = "yyyy-MM";
 
-
     private static final String S = ".0";
 
     public static String formatDate(java.util.Date date) {
         return formatDateByFormat(date, "yyyy-MM-dd");
     }
-    
+
     public static String formatDateTime(java.util.Date date) {
         return formatDateByFormat(date, LONG_DATE_TIME_PATTERN);
     }
@@ -90,6 +98,30 @@ public class DateUtil {
         SimpleDateFormat formatter = new SimpleDateFormat(LONG_DATE_TIME_PATTERN_SSS);
         String formatStr = formatter.format(new Date());
         return formatStr;
+    }
+
+    public static String formatDateInMillisToEpochTime(String string) throws ParseException {
+        // input string format "2017.07.19 11:42:30.423"
+        // use correct format ('S' for milliseconds)
+        SimpleDateFormat formatter = new SimpleDateFormat(LONG_DATE_TIME_PATTERN_SSS1);
+        // parse to a date
+        Date date = formatter.parse(string);
+        // get epoch millis
+        long millis = date.getTime();
+        return Long.toString(millis); // 1500475350423
+
+    }
+    /**
+     * unix时间戳（毫秒级）转为"yyyyMMddHHmmssSSS"时间戳
+     *
+     * @param string, string内为纯数字，如 "1527696348345"
+     * @return str，返回示例 "2018-05-31 17:45:35.231"
+     */
+    public static String unixTimestampToTimestamp(String string) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        String str = sdf.format(Long.parseLong(string));
+
+        return str;
     }
 
     public static java.util.Date parseYMDDate(int ymdDate) {
@@ -209,7 +241,7 @@ public class DateUtil {
 
     /**
      * 日期相加
-     * 
+     *
      * @param date Date
      * @param day int
      * @return Date
@@ -222,7 +254,7 @@ public class DateUtil {
 
     /**
      * 日期相加
-     * 
+     *
      * @param date Date
      * @param day int
      * @return Date
@@ -237,7 +269,7 @@ public class DateUtil {
 
     /**
      * 日期天数相减
-     * 
+     *
      * @param date Date
      * @param day int
      * @return Date
@@ -250,7 +282,7 @@ public class DateUtil {
 
     /**
      * 小时相加
-     * 
+     *
      * @param date Date
      * @param hour int
      * @return Date
@@ -263,7 +295,7 @@ public class DateUtil {
 
     /**
      * 小时相加
-     * 
+     *
      * @param date Date
      * @param hour int
      * @return Date
@@ -276,7 +308,7 @@ public class DateUtil {
 
     /**
      * 减second秒
-     * 
+     *
      * @param date
      * @param second
      * @return
@@ -289,7 +321,7 @@ public class DateUtil {
 
     /**
      * 通过当前日期获取相差 day 天前的时间 时分秒00:00:00
-     * 
+     *
      * @param time
      * @param day
      * @return
@@ -304,7 +336,7 @@ public class DateUtil {
 
     /**
      * 日期相减
-     * 
+     *
      * @param date Date
      * @param date1 Date
      * @return int
@@ -315,7 +347,7 @@ public class DateUtil {
 
     /**
      * 日期相减(返回秒值)
-     * 
+     *
      * @param date Date
      * @param date1 Date
      * @return int
@@ -375,7 +407,7 @@ public class DateUtil {
 
     /**
      * 获得当前时间
-     * 
+     *
      * @return
      */
     public static Date getCurrentDateTime() {
@@ -438,7 +470,7 @@ public class DateUtil {
 
     /**
      * 解析日期时间字符串，得到Date对象
-     * 
+     *
      * @param input 日期时间字符串
      * @param pattern 格式
      * @return
@@ -492,8 +524,8 @@ public class DateUtil {
 
     public enum DateTimePattern {
 
-        ISO_DATE("yyyy-MM-dd"), ISO_DATETIME_NO_SECOND("yyyy-MM-dd HH:mm"), ISO_DATETIME("yyyy-MM-dd HH:mm:ss"), ISO_DATETIME_HAS_MILLISECOND(
-                "yyyy-MM-dd HH:mm:ss.SSS");
+        ISO_DATE("yyyy-MM-dd"), ISO_DATETIME_NO_SECOND("yyyy-MM-dd HH:mm"), ISO_DATETIME(
+                "yyyy-MM-dd HH:mm:ss"), ISO_DATETIME_HAS_MILLISECOND("yyyy-MM-dd HH:mm:ss.SSS");
 
         private String pattern;
 
@@ -520,7 +552,7 @@ public class DateUtil {
 
     /**
      * This method generates a string representation of a date/time in the format you specify on input
-     * 
+     *
      * @param aMask the date pattern the string is in
      * @param strDate a string representation of a date
      * @return a converted Date object
@@ -544,7 +576,7 @@ public class DateUtil {
 
     /**
      * This method converts a String to a date using the datePattern
-     * 
+     *
      * @param strDate the date to convert (in format MM/dd/yyyy)
      * @return a date object
      * @throws ParseException when String doesn't match the expected format
@@ -569,7 +601,7 @@ public class DateUtil {
 
     /**
      * Return default datePattern (MM/dd/yyyy)
-     * 
+     *
      * @return a string representing the date pattern on the UI
      */
     public static String getDatePattern() {
@@ -589,7 +621,7 @@ public class DateUtil {
     /**
      * This method generates a string representation of a date based on the System Property 'dateFormat' in the format you
      * specify on input
-     * 
+     *
      * @param aDate A date to convert
      * @return a string representation of the date
      */
@@ -599,7 +631,7 @@ public class DateUtil {
 
     /**
      * This method generates a string representation of a date's date/time in the format you specify on input
-     * 
+     *
      * @param aMask the date pattern the string is in
      * @param aDate a date object
      * @return a formatted string representation of the date
@@ -619,7 +651,7 @@ public class DateUtil {
 
     /**
      * 根据当前日期获取后一天的日期
-     * 
+     *
      * @return
      * @throws ParseException
      */
@@ -636,7 +668,7 @@ public class DateUtil {
 
     /**
      * 根据当前日期获取前一天的日期
-     * 
+     *
      * @return
      * @throws ParseException
      */
@@ -653,7 +685,7 @@ public class DateUtil {
 
     /**
      * 获取年月之间相隔多少月
-     * 
+     *
      * @param date1
      * @param date2
      * @return
@@ -669,7 +701,7 @@ public class DateUtil {
 
     /**
      * 将传过来的日期yyyy-MM-dd HH:mm:ss 转换为 yyyy-MM-dd HH:mm:ss
-     * 
+     *
      * @param strDate
      * @return
      */
@@ -685,7 +717,7 @@ public class DateUtil {
 
     /**
      * 日期相减(返回分钟)
-     * 
+     *
      * @param date Date
      * @param date1 Date
      * @return int
@@ -697,7 +729,7 @@ public class DateUtil {
 
     /**
      * 获取系统的 Timestamp
-     * 
+     *
      * @return 系统当前时间的 Timestamp
      */
     public static Timestamp getSystemTimestamp() {
@@ -706,7 +738,7 @@ public class DateUtil {
 
     /**
      * 给指定日期加几个月
-     * 
+     *
      * @param date 指定的日期
      * @param numMonths 需要往后加的月数
      * @return 加好后的日期
@@ -725,7 +757,7 @@ public class DateUtil {
 
     /**
      * 将一个指定的日期格式化成指定的格式
-     * 
+     *
      * @param date 指定的日期
      * @param pattern 指定的格式
      * @return 格式化好后的日期字符串
@@ -781,7 +813,7 @@ public class DateUtil {
 
     /**
      * 获取开始时间
-     * 
+     *
      * @param month
      * @return
      */
@@ -797,7 +829,7 @@ public class DateUtil {
 
     /**
      * 获取结束时间
-     * 
+     *
      * @param month
      * @return
      */
@@ -809,7 +841,7 @@ public class DateUtil {
 
     /**
      * 获取初期日期
-     * 
+     *
      * @param month
      * @return
      */
@@ -825,7 +857,7 @@ public class DateUtil {
 
     /**
      * 期末
-     * 
+     *
      * @param month
      * @return
      */
@@ -906,7 +938,7 @@ public class DateUtil {
 
     /**
      * 获取今天
-     * 
+     *
      * @return
      */
     public static Date convertTimeToDate(Date date) {
@@ -943,7 +975,7 @@ public class DateUtil {
 
     /**
      * 获取前?个小时 TODO 添加方法注释
-     * 
+     *
      * @author lxy
      * @param today
      * @param format
@@ -960,7 +992,7 @@ public class DateUtil {
 
     /**
      * 获取明天时间字符串
-     * 
+     *
      * @author Lxl
      * @param format
      * @return
@@ -974,7 +1006,7 @@ public class DateUtil {
 
     /**
      * 根据当前时间获取明天时间字符串
-     * 
+     *
      * @author Lxl
      * @param today
      * @param format
@@ -1030,7 +1062,7 @@ public class DateUtil {
 
     /**
      * 格式化开始日期，如20160723格式化为2016-07-23 00:00
-     * 
+     *
      * @param stime
      * @return
      */
@@ -1043,7 +1075,7 @@ public class DateUtil {
 
     /**
      * 格式化结束日期，如20160701格式化为2016-06-30 23:59
-     * 
+     *
      * @param etime
      * @return
      */
@@ -1059,7 +1091,7 @@ public class DateUtil {
 
     /**
      * 根据开始时间和结束时间返回时间段内的时间集合，不包括结束时间
-     * 
+     *
      * @param beginDate 20170518
      * @param endDate 20170520
      * @return 20170518,20170519
@@ -1096,7 +1128,7 @@ public class DateUtil {
 
     /**
      * 查询两个日期相差天数
-     * 
+     *
      * @author Lxl
      * @param sDate 开始日期
      * @param eDate 结束日期
@@ -1115,7 +1147,7 @@ public class DateUtil {
 
     /**
      * 获取最小时间
-     * 
+     *
      * @author Lxl
      * @param dateList
      * @return
@@ -1132,7 +1164,7 @@ public class DateUtil {
 
     /**
      * 获取最大时间
-     * 
+     *
      * @author Lxl
      * @param dateList
      * @return
@@ -1160,23 +1192,23 @@ public class DateUtil {
     }
 
     public static void main(String[] args) {
+
         Calendar cal = Calendar.getInstance();
-//        cal.add(Calendar.DAY_OF_MONTH, -7);
+        // cal.add(Calendar.DAY_OF_MONTH, -7);
         Date sdate = new Date();
         Date edate = cal.getTime();
-//        System.out.println(sdate.toLocaleString());
-//        System.out.println(edate.toLocaleString());
-//        System.out.println(betweenOfDays(sdate, edate));
-//
-//        String edd = "2017-11-28 19:24:01";
-//        System.out.println(betweenOfDays(sdate, parse(edd, LONG_DATE_TIME_PATTERN)));
-//        
-//        System.out.println(removeS("2017-11-27 17:08:32"));
-        
-        
-       String newDate = addDate(cal.getTime(), 10).toLocaleString();
-       System.out.println(newDate);
-        // String ss = "2017-08-12  00:00:00";
+        // System.out.println(sdate.toLocaleString());
+        // System.out.println(edate.toLocaleString());
+        // System.out.println(betweenOfDays(sdate, edate));
+        //
+        // String edd = "2017-11-28 19:24:01";
+        // System.out.println(betweenOfDays(sdate, parse(edd, LONG_DATE_TIME_PATTERN)));
+        //
+        // System.out.println(removeS("2017-11-27 17:08:32"));
+
+        String newDate = addDate(cal.getTime(), 10).toLocaleString();
+        System.out.println(newDate);
+        // String ss = "2017-08-12 00:00:00";
         // System.out.println();
         // List<Date> dateList = new ArrayList<>();
         // dateList.add(cal.getTime());
@@ -1193,7 +1225,7 @@ public class DateUtil {
 
     /**
      * 格式化开始日期，如20160723格式化为2016-07-23 00:00
-     * 
+     *
      * @param stime
      * @return
      */
@@ -1212,7 +1244,7 @@ public class DateUtil {
 
     /**
      * 移除mysql时间末尾.0
-     * 
+     *
      * @author Lxl
      * @param dateString
      * @return

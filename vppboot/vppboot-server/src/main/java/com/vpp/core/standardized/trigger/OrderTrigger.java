@@ -1,7 +1,8 @@
 package com.vpp.core.standardized.trigger;
 
 import java.math.BigDecimal;
-import java.util.Date;
+
+import com.vpp.common.utils.DateUtil;
 
 public class OrderTrigger {
     private Long triggerId;
@@ -12,7 +13,7 @@ public class OrderTrigger {
 
     private Byte triggerState;
 
-    private Date gmtCreate;
+    private String gmtCreate;
 
     private String description;
 
@@ -20,7 +21,7 @@ public class OrderTrigger {
 
     private Float threshold;
 
-    private Date realWeatherDate;
+    private String realWeatherDate;
 
     private Float nmcWeatherValue;
 
@@ -60,14 +61,6 @@ public class OrderTrigger {
         this.triggerState = triggerState;
     }
 
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -92,11 +85,19 @@ public class OrderTrigger {
         this.threshold = threshold;
     }
 
-    public Date getRealWeatherDate() {
-        return realWeatherDate;
+    public String getGmtCreate() {
+        return DateUtil.removeS(gmtCreate);
     }
 
-    public void setRealWeatherDate(Date realWeatherDate) {
+    public void setGmtCreate(String gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public String getRealWeatherDate() {
+        return DateUtil.removeS(realWeatherDate);
+    }
+
+    public void setRealWeatherDate(String realWeatherDate) {
         this.realWeatherDate = realWeatherDate;
     }
 

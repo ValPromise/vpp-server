@@ -26,7 +26,7 @@ public class LoginUtils {
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
 
-    private static final String TOKEN_NAME = "X-Token";
+    private static final String TOKEN_NAME = "x-access-token";
 
     /**
      * 获取前端token对应登录用户ID

@@ -19,9 +19,9 @@ public class HomeController extends CommonController {
     @RequestMapping("/getBanner")
     public ResultVo getBanner(String token, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if (!checkLogin(token)) {
-            return ResultVo.setResultError(getMessage("token"), TOKEN_FAIL_ERROR_CODE);
-        }
+//        if (!checkLogin(token)) {
+//            return ResultVo.setResultError(getMessage("token"), TOKEN_FAIL_ERROR_CODE);
+//        }
         Map<String, Object> returnMap = new HashMap<String, Object>();
         returnMap.put("banners", this.getBanner());
         returnMap.put("notices", this.getNotice());

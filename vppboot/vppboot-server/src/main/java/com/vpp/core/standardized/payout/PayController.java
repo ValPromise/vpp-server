@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.Page;
 import com.vpp.common.page.PageInfo;
+import com.vpp.common.utils.DateUtil;
 import com.vpp.common.utils.DealUtil;
 import com.vpp.common.vo.ResultVo;
 import com.vpp.core.common.CommonController;
@@ -47,7 +48,7 @@ public class PayController extends CommonController {
         if (!checkLogin(token)) {
             return ResultVo.setResultError("登录超时");
         }
-        Long customerId = Long.valueOf(getTokenId(token));
+        Long customerId = Long.valueOf(getCustomerIdByToken(token));
         Customer customer = customerService.selectCustomerById(customerId);
         // if (StringUtils.isBlank(payPassword) || !customer.getPayPassword().equals(MD5Utils.getMD5String(payPassword.trim())))
         // {
@@ -70,7 +71,7 @@ public class PayController extends CommonController {
         boolean ret = false;
         customer.setBalance(DealUtil.priceSubtract(customer.getBalance(), order.getOrderPrice()));
         order.setPayState((byte) 1);
-        order.setPayTime(new Date());
+        order.setPayTime(DateUtil.getCurrentDateTimeLocal());
         order.setPayFee(order.getOrderPrice());
         ret = payService.payCallBack(customer, order);
         if (ret) {
@@ -86,7 +87,7 @@ public class PayController extends CommonController {
         if (!checkLogin(token)) {
             return ResultVo.setResultError("登录超时");
         }
-        Long customerId = Long.valueOf(getTokenId(token));
+        Long customerId = Long.valueOf(getCustomerIdByToken(token));
         if (customerId == null) {
             return ResultVo.setResultError();
         }
@@ -122,7 +123,7 @@ public class PayController extends CommonController {
         if (!checkLogin(token)) {
             return ResultVo.setResultError("登录超时");
         }
-        Long customerId = Long.valueOf(getTokenId(token));
+        Long customerId = Long.valueOf(getCustomerIdByToken(token));
         if (customerId == null) {
             return ResultVo.setResultError();
         }
