@@ -13,7 +13,9 @@
         <result column="order_price" property="orderPrice" jdbcType="DECIMAL" />
         <result column="profit" property="profit" jdbcType="DECIMAL" />
         <result column="lottery_time" property="lotteryTime" jdbcType="TIMESTAMP" />
+        <result column="lottery_time_unix" property="lotteryTimeUnix" jdbcType="VARCHAR" />
         <result column="actual_lottery_time" property="actualLotteryTime" jdbcType="TIMESTAMP" />
+        <result column="actual_lottery_time_unix" property="actualLotteryTimeUnix" jdbcType="VARCHAR" />
         <result column="actual_price" property="actualPrice" jdbcType="DECIMAL" />
         <result column="status" property="status" jdbcType="INTEGER" />
         <result column="reward_flg" property="rewardFlg" jdbcType="INTEGER" />
@@ -23,8 +25,8 @@
     </resultMap>
     <sql id="Base_Column_List" >
         id, customer_id, order_id, target_id, order_amt, order_dir, order_ts, order_ts_unix,
-        order_price, profit, lottery_time, actual_lottery_time, actual_price, status, reward_flg,
-        description, gmt_create, gmt_modified
+        order_price, profit, lottery_time, lottery_time_unix, actual_lottery_time, actual_lottery_time_unix,
+        actual_price, status, reward_flg, description, gmt_create, gmt_modified
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
         select
@@ -40,14 +42,16 @@
         insert into order_list_coin (id, customer_id, order_id,
                                      target_id, order_amt, order_dir,
                                      order_ts, order_ts_unix, order_price,
-                                     profit, lottery_time, actual_lottery_time,
+                                     profit, lottery_time, lottery_time_unix,
+                                     actual_lottery_time, actual_lottery_time_unix,
                                      actual_price, status, reward_flg,
                                      description, gmt_create, gmt_modified
         )
         values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=VARCHAR},
                                        #{targetId,jdbcType=VARCHAR}, #{orderAmt,jdbcType=DECIMAL}, #{orderDir,jdbcType=INTEGER},
                                        #{orderTs,jdbcType=TIMESTAMP}, #{orderTsUnix,jdbcType=VARCHAR}, #{orderPrice,jdbcType=DECIMAL},
-                                       #{profit,jdbcType=DECIMAL}, #{lotteryTime,jdbcType=TIMESTAMP}, #{actualLotteryTime,jdbcType=TIMESTAMP},
+                                       #{profit,jdbcType=DECIMAL}, #{lotteryTime,jdbcType=TIMESTAMP}, #{lotteryTimeUnix,jdbcType=VARCHAR},
+                #{actualLotteryTime,jdbcType=TIMESTAMP}, #{actualLotteryTimeUnix,jdbcType=VARCHAR},
                 #{actualPrice,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER}, #{rewardFlg,jdbcType=INTEGER},
                 #{description,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}
         )
@@ -88,8 +92,14 @@
             <if test="lotteryTime != null" >
                 lottery_time,
             </if>
+            <if test="lotteryTimeUnix != null" >
+                lottery_time_unix,
+            </if>
             <if test="actualLotteryTime != null" >
                 actual_lottery_time,
+            </if>
+            <if test="actualLotteryTimeUnix != null" >
+                actual_lottery_time_unix,
             </if>
             <if test="actualPrice != null" >
                 actual_price,
@@ -144,8 +154,14 @@
             <if test="lotteryTime != null" >
                 #{lotteryTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="lotteryTimeUnix != null" >
+                #{lotteryTimeUnix,jdbcType=VARCHAR},
+            </if>
             <if test="actualLotteryTime != null" >
                 #{actualLotteryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actualLotteryTimeUnix != null" >
+                #{actualLotteryTimeUnix,jdbcType=VARCHAR},
             </if>
             <if test="actualPrice != null" >
                 #{actualPrice,jdbcType=DECIMAL},
@@ -200,8 +216,14 @@
             <if test="lotteryTime != null" >
                 lottery_time = #{lotteryTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="lotteryTimeUnix != null" >
+                lottery_time_unix = #{lotteryTimeUnix,jdbcType=VARCHAR},
+            </if>
             <if test="actualLotteryTime != null" >
                 actual_lottery_time = #{actualLotteryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actualLotteryTimeUnix != null" >
+                actual_lottery_time_unix = #{actualLotteryTimeUnix,jdbcType=VARCHAR},
             </if>
             <if test="actualPrice != null" >
                 actual_price = #{actualPrice,jdbcType=DECIMAL},
@@ -236,7 +258,9 @@
             order_price = #{orderPrice,jdbcType=DECIMAL},
             profit = #{profit,jdbcType=DECIMAL},
             lottery_time = #{lotteryTime,jdbcType=TIMESTAMP},
+            lottery_time_unix = #{lotteryTimeUnix,jdbcType=VARCHAR},
             actual_lottery_time = #{actualLotteryTime,jdbcType=TIMESTAMP},
+            actual_lottery_time_unix = #{actualLotteryTimeUnix,jdbcType=VARCHAR},
             actual_price = #{actualPrice,jdbcType=DECIMAL},
             status = #{status,jdbcType=INTEGER},
             reward_flg = #{rewardFlg,jdbcType=INTEGER},
