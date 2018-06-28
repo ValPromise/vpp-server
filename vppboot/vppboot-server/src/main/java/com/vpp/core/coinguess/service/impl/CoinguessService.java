@@ -48,6 +48,8 @@ public class CoinguessService implements ICoinguessService {
     public static String QUERY_COIN_PRICE_REALTIME = "http://119.28.202.93:8005/bian/redisdetail/";
     public static String QUERY_ORDER_PRICE = "http://119.28.202.93:8006/bian/redis/order/detail/";
     public static String QUERY_ACTUAL_PRICE = "http://119.28.202.93:8007/bian/redis/result/detail/";
+    //todo: 获取移动平均价格
+    //public static String QUERY_AVERAGE_PRICE = "";
     // @Autowired
     // private Coinguess coinguess;
 
@@ -235,8 +237,11 @@ public class CoinguessService implements ICoinguessService {
         // 对未开奖记录获取下单价格，如果有缓存则取缓存价格
         for (Coinguess item : coinguess) {
 
+            //todo: 获取移动平均价格 下两行注释
             Long realOrderTime = lotteryTime - 30000L;  // 下单时间被固定在30秒处，30000L = 30秒
             String key = item.getTargetId() + realOrderTime.toString();
+            //todo: 获取移动平均价格
+            //String key = item.getTargetId() + item.getOrderTsUnix();
             try {
                 if (productLotteryTimeOrderPriceMap.get(key) == null) {  //如果map中未存，则请求下单价格
                     String calOrderTime = (Long.parseLong(DateUtil.formatDateInMillisToEpochTime(item.getLotteryTime())) - 30000L) + "";
@@ -259,7 +264,6 @@ public class CoinguessService implements ICoinguessService {
             }
 
         }
-
 
     }
 
@@ -409,6 +413,7 @@ public class CoinguessService implements ICoinguessService {
 
             // 开奖信息赋值
             coinguess.setActualPrice(actualPrice);
+            coinguess.setActualLotteryTimeUnix(actualLotteryTimeInUnix);
             coinguess.setActualLotteryTime(actualLotteryTimeInDbTimestamp);
 
             if (orderPrice == null || actualPrice == null || coinguess.getOrderDir() == null) {
@@ -608,6 +613,8 @@ public class CoinguessService implements ICoinguessService {
 
         String json = null;
         json = HttpSenderUtils.sendPostMap(QUERY_ORDER_PRICE, params); // 异常在上一层handle
+        //todo: 获取均线价格
+        //json = HttpSenderUtils.sendPostMap(QUERY_AVERAGE_PRICE, params); // 异常在上一层handle
 
         // json解析
         JSONObject jsonObj = JSONObject.fromObject(json);
