@@ -18,11 +18,11 @@ public interface CoinguessMapper {
 
     Coinguess selectByPrimaryKey(Long id);
 
-    int selectByCustomerIdAndOrderTs(@Param("customerId")Long customerId, @Param("orderTs")String orderTs);
-
     int updateByPrimaryKeySelective(Coinguess record);
 
     int updateByPrimaryKey(Coinguess record);
+
+    int selectByCustomerIdAndOrderTs(@Param("customerId")Long customerId, @Param("orderTs")String orderTs);
 
     /* manual add to select Coinguess records by customer id */
     Page<Coinguess> selectCoinguessInfoByCustomerId(@Param("customerId")Long customerId);
