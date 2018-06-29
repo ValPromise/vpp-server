@@ -28,7 +28,8 @@ public class ProductCoinguessController extends CommonController {
 
         List<ProductCoinguessList> list = productCoinguessService.selectProductCoinguessByStatus();
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("help","合约开始前下单，选择合约开始至到期时，价格涨跌，如果选择正确则得到购买下单金额180%补偿。");
+        result.put("help","合约规则：\n1.以60s移动价格均线上所选价格为下单价格，在系统允许次数内可重复下单\n2.合约到期时，系统以来自交易所的币价与用户下单价格对比，如果用户预判正确，则获得下单金额180%补偿\n3.如有疑问，请APP内用户反馈留言，或加微信valpromise-vpp\n注：60s移动价格均线上任意一点的值＝该点之前60s价格平均值");
+        result.put("ad","公募认购倒计时！详情添加微信小助理：valpromise-vpp");
         result.put("product",list);
         return ResultVo.setResultSuccess(result);
     }
