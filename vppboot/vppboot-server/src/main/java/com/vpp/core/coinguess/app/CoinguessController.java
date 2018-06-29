@@ -7,6 +7,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.vpp.core.coinguess.mapper.CoinguessMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class CoinguessController extends CommonController {
 
     @RequestMapping(value = "/add")
     public ResultVo add(String token, String targetId, BigDecimal orderAmt, String orderDir, String orderTs,
-            BigDecimal orderPrice, HttpServletResponse response) {
+                        BigDecimal orderPrice, HttpServletResponse response) {
 //        System.out.println("targetId" + targetId);
 //        System.out.println("orderAmt" + orderAmt);
 //        System.out.println("orderDir" + orderDir);
@@ -155,18 +156,23 @@ public class CoinguessController extends CommonController {
             lotteryTimeInUnix += interval;
         }
         String lotteryTime = DateUtil.unixTimestampToTimestamp(Long.toString(lotteryTimeInUnix)); // 开奖时间
-        coinguess.setLotteryTime(lotteryTime);
+        coinguess.setLotteryTime(lotteryTime);  //开奖时间（人眼识别）
+        coinguess.setLotteryTimeUnix(Long.toString(lotteryTimeInUnix));  //unix时间
 
         // 风控：单人单期最多下N单， N = productCoinguess.getOrderAllowed()，数据库字段product_coinguess.order_allowed
 
         if(coinguessService.getTotalOrders(coinguess.getCustomerId(),lotteryTime) >= productCoinguess.getOrderAllowed()){
-			return ResultVo.setResultError("每期限下" + productCoinguess.getOrderAllowed() + "单");
-		}
+            return ResultVo.setResultError("每期限下" + productCoinguess.getOrderAllowed() + "单");
+        }
 
         // 单期下单金额汇总
         BigDecimal totalOrderAmtInOneTerm = coinguessService.getTotalOrderAmountByLotteryTime(lotteryTime);
 
         BigDecimal maxBetWithinOneTerm = productCoinguess.getSingleTermLimit();
+
+        if(maxBetWithinOneTerm.compareTo(BigDecimal.ZERO) == 0){
+            return ResultVo.setResultError("单期系统接受的订单已经超过上限金额：" + 20000 + " 请在下期下单");
+        }
 
 
         // 风控：当期第一单判断，下单金额不能超过maxBetWithinOneTerm金额
@@ -182,7 +188,7 @@ public class CoinguessController extends CommonController {
                 maxBetWithinOneTerm != null && // maxBetWithinOneTerm 数据库有值
                 !(maxBetWithinOneTerm.compareTo(BigDecimal.ZERO) == 0) && // maxBetWithinOneTerm 不为0
                 totalOrderAmtInOneTerm.add(orderAmt).compareTo(maxBetWithinOneTerm) > 0) { // 单期下注汇金额 + 本次投注金额 超过
-                                                                                           // 系统允许的总金额，该期不接受新订单
+            // 系统允许的总金额，该期不接受新订单
             return ResultVo.setResultError("单期系统接受的订单已经超过上限金额：" + maxBetWithinOneTerm + " 请在下期下单");
         }
 
@@ -411,5 +417,6 @@ public class CoinguessController extends CommonController {
         Long d1 = System.currentTimeMillis();
         System.out.println("开奖时间: " + (d1-d0));
         return ResultVo.setResultSuccess(result);
-   }
+    }
+
 }
