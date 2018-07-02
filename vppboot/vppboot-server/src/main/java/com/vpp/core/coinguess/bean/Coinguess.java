@@ -25,7 +25,11 @@ public class Coinguess {
 
     private String lotteryTime;
 
+    private String lotteryTimeUnix;
+
     private String actualLotteryTime;
+
+    private String actualLotteryTimeUnix;
 
     private BigDecimal actualPrice;
 
@@ -127,12 +131,28 @@ public class Coinguess {
         this.lotteryTime = lotteryTime;
     }
 
+    public String getLotteryTimeUnix() {
+        return lotteryTimeUnix;
+    }
+
+    public void setLotteryTimeUnix(String lotteryTimeUnix) {
+        this.lotteryTimeUnix = lotteryTimeUnix == null ? null : lotteryTimeUnix.trim();
+    }
+
     public String getActualLotteryTime() {
         return actualLotteryTime;
     }
 
     public void setActualLotteryTime(String actualLotteryTime) {
         this.actualLotteryTime = actualLotteryTime;
+    }
+
+    public String getActualLotteryTimeUnix() {
+        return actualLotteryTimeUnix;
+    }
+
+    public void setActualLotteryTimeUnix(String actualLotteryTimeUnix) {
+        this.actualLotteryTimeUnix = actualLotteryTimeUnix == null ? null : actualLotteryTimeUnix.trim();
     }
 
     public BigDecimal getActualPrice() {

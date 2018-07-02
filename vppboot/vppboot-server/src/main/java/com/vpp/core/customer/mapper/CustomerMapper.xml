@@ -368,7 +368,8 @@
 	</select>
 	<update id="incomeBalance" parameterType="map">
 		update customer
-		set balance = balance + #{income,jdbcType=DECIMAL}
+		set
+		balance = balance + #{income,jdbcType=DECIMAL}
 		where id =
 		#{customerId,jdbcType=BIGINT}
 	</update>
@@ -432,5 +433,16 @@
 			and mobile = #{mobile}
 		</if>
 		order by id desc
+	</select>
+
+	<select id="findCount" resultType="int">
+		select COUNT(id) from customer where 1=1
+		<if test="startGmtCreate != null and startGmtCreate !='' ">
+			and gmt_create >= #{startGmtCreate}
+		</if>
+		<if test="endGmtCreate != null and endGmtCreate !='' ">
+			and gmt_create <![CDATA[ <= ]]>
+			#{endGmtCreate}
+		</if>
 	</select>
 </mapper>

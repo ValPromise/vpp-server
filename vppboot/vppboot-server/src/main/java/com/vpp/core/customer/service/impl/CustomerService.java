@@ -238,4 +238,9 @@ public class CustomerService implements ICustomerService {
         PageHelper.startPage(currentPage, pageSize);
         return customerMapper.findListByCondition(params);
     }
+
+    @Override
+    public Integer findCount(String startGmtCreate, String endGmtCreate) {
+        return customerMapper.findCount(startGmtCreate, endGmtCreate);
+    }
 }

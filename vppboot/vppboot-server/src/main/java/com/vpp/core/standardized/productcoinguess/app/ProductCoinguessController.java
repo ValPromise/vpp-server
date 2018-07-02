@@ -6,6 +6,8 @@ import com.vpp.core.common.CommonController;
 import com.vpp.core.standardized.productcoinguess.bean.ProductCoinguess;
 import com.vpp.core.standardized.productcoinguess.bean.ProductCoinguessList;
 import com.vpp.core.standardized.productcoinguess.service.IProductCoinguessService;
+import com.vpp.core.systemparam.bean.SystemParam;
+import com.vpp.core.systemparam.service.ISystemParamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,14 +24,23 @@ public class ProductCoinguessController extends CommonController {
     @Autowired
     private IProductCoinguessService productCoinguessService;
 
+    @Autowired
+    private ISystemParamService systemParamService;
+
     @RequestMapping(value = "/getList")
     public ResultVo getProductCoinguessList(String token, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
 
         List<ProductCoinguessList> list = productCoinguessService.selectProductCoinguessByStatus();
+
+        //读system参数
+        SystemParam systemParamHelp = systemParamService.selectByParamTypeAndName("coinguess","coinguess_help");
+        SystemParam systemParamAd = systemParamService.selectByParamTypeAndName("coinguess","coinguess_ad");
+
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("help","合约开始前下单，选择合约开始至到期时，价格涨跌，如果选择正确则得到购买下单金额180%补偿。");
         result.put("product",list);
+        result.put("help",systemParamHelp.getParamValue());
+        result.put("ad",systemParamAd.getParamValue());
         return ResultVo.setResultSuccess(result);
     }
 

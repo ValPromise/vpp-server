@@ -269,28 +269,28 @@
             gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
-  <select id="selectCoinguessInfoByCustomerId" resultMap="BaseResultMap">
+    <select id="selectCoinguessInfoByCustomerId" resultMap="BaseResultMap">
   	  select * from order_list_coin where customer_id = #{customerId} ORDER BY gmt_create DESC
   </select>
-  <select id="selectByCustomerIdAndOrderTs" resultType="int">
+    <select id="selectByCustomerIdAndOrderTs" resultType="int">
   	  select exists(select 1 from order_list_coin where customer_id = #{customerId} and order_ts = #{orderTs})
   </select>
-  <select id="selectCoinguessInfoByStatus" resultMap="BaseResultMap" parameterType="string">
+    <select id="selectCoinguessInfoByStatus" resultMap="BaseResultMap" parameterType="string">
       select * from order_list_coin where status = 0 and lottery_time = #{lotteryTime}
   </select>
-  <select id="getTotalOrderAmountByLotteryTime" resultType="BigDecimal">
+    <select id="getTotalOrderAmountByLotteryTime" resultType="BigDecimal">
   	  select sum(order_amt) from order_list_coin group by lottery_time having lottery_time = #{lotteryTime};
   </select>
-  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="string">
+    <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="string">
   	  select * from order_list_coin where order_id = #{orderId};
   </select>
-   <select id="getTotalProfit" resultType="BigDecimal" parameterType="list">
-  	  select sum(profit) from order_list_coin where id in
-       <foreach item="id" collection="idList" open="(" separator="," close=")">
-           #{id}
-       </foreach>
-  	  and status = '2';
-  </select>
+    <select id="getTotalProfit" resultType="BigDecimal" parameterType="list">
+        select sum(profit) from order_list_coin where id in
+        <foreach item="id" collection="idList" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and status = '2';
+    </select>
     <select id="getTotalOrders" resultType="Integer">
   	  select count(*) from order_list_coin where customer_id = #{customerId} and lottery_time = #{lotteryTime};
   </select>
@@ -299,5 +299,30 @@
   </select>
     <select id="selectForRefund" resultMap="BaseResultMap">
         select * from order_list_coin where status = '0' and lottery_time <![CDATA[<=]]> #{lotteryTime};
+    </select>
+
+    <select id="findCount" resultType="java.util.Map">
+        select target_id as targetId,count(id) as cnt,sum(order_amt) as amount  from order_list_coin where 1=1
+        <if test="startGmtCreate != null and startGmtCreate !='' ">
+            and gmt_create >= #{startGmtCreate}
+        </if>
+        <if test="endGmtCreate != null and endGmtCreate !='' ">
+            and gmt_create <![CDATA[ <= ]]>
+            #{endGmtCreate}
+        </if>
+        group by target_id
+    </select>
+
+    <select id="findPayout" resultType="java.util.Map">
+        select target_id as targetId,sum(order_price) as payout from order_list_coin
+        where status = 2
+        <if test="startGmtCreate != null and startGmtCreate !='' ">
+            and gmt_create >= #{startGmtCreate}
+        </if>
+        <if test="endGmtCreate != null and endGmtCreate !='' ">
+            and gmt_create <![CDATA[ <= ]]>
+            #{endGmtCreate}
+        </if>
+        group by target_id
     </select>
 </mapper>

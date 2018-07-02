@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CoinguessMapper {
@@ -40,6 +41,28 @@ public interface CoinguessMapper {
     Integer getTotalOrders(@Param("customerId")Long customerId, @Param("lotteryTime") String lotteryTime);
 
     List<Coinguess> selectForRefund(@Param("lotteryTime")String Long);
+
+    /**
+     * 根据条件查询订单数
+     *
+     * @author Lxl
+     * @param startGmtCreate
+     * @param endGmtCreate
+     * @return
+     */
+    List<Map<String, Object>> findCount(@Param("startGmtCreate") String startGmtCreate,
+                                        @Param("endGmtCreate") String endGmtCreate);
+
+    /**
+     * 根据条件查询赔付金额
+     *
+     * @author Lxl
+     * @param startGmtCreate
+     * @param endGmtCreate
+     * @return
+     */
+    List<Map<String, Object>> findPayout(@Param("startGmtCreate") String startGmtCreate,
+                                         @Param("endGmtCreate") String endGmtCreate);
 
 
 }

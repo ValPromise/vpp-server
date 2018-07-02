@@ -8,17 +8,20 @@
  */
 package com.vpp.core.common;
 
+import java.util.Date;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import com.vpp.core.coinguess.service.ICoinguessService;
-import com.vpp.core.customer.service.ICustomerService;
-import com.vpp.core.withdrawal.service.IWithdrawalService;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import com.vpp.common.utils.DateUtil;
+import com.vpp.core.coinguess.service.ICoinguessService;
+import com.vpp.core.customer.service.ICustomerService;
+import com.vpp.core.rain.service.IRainOrderTriggerService;
+import com.vpp.core.standardized.trigger.ITriggerService;
+import com.vpp.core.withdrawal.service.IWithdrawalService;
 
 /**
  * 定时任务
@@ -38,54 +41,77 @@ public class ScheduledTasks {
     @Autowired
     private ICoinguessService coinguessService;
 
-     @Scheduled(cron = "35 * * * * ?") //每到35整秒执行一次，1分35秒；2分35秒；3分35秒；4分35秒...
-     //批量获取下单价格，第35秒
-     public void batchUpdateOrderPrice35(){
-         System.out.println("batchUpdateOrderPrice35: " + new Date());
-         try {
-             Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
-             coinguessService.batchUpdateOrderPrice(currentLotteyTime);
-         } catch (Exception e) {
-             logger.error("猜币批量更新下单价格出错35 : " + e.getMessage());
-            // e.printStackTrace();
-         }
-     }
+    @Autowired
+    private ITriggerService triggerService;
+    @Autowired
+    private IRainOrderTriggerService rainOrderTriggerService;
 
-    @Scheduled(cron = "46 * * * * ?") //每到46整秒执行一次，1分46秒；2分46秒；3分46秒；4分46秒...
-    //批量获取下单价格，第46秒
-    public void batchUpdateOrderPrice46(){
+    @Scheduled(cron = "35 * * * * ?") // 每到35整秒执行一次，1分35秒；2分35秒；3分35秒；4分35秒...
+    // 批量获取下单价格，第35秒
+    public void batchUpdateOrderPrice35() {
+        System.out.println("batchUpdateOrderPrice35: " + new Date());
+        try {
+            Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
+            coinguessService.batchUpdateOrderPrice(currentLotteyTime);
+        } catch (Exception e) {
+            logger.error("猜币批量更新下单价格出错35 : " + e.getMessage());
+            // e.printStackTrace();
+        }
+    }
+
+    @Scheduled(cron = "46 * * * * ?") // 每到46整秒执行一次，1分46秒；2分46秒；3分46秒；4分46秒...
+    // 批量获取下单价格，第46秒
+    public void batchUpdateOrderPrice46() {
         System.out.println("batchUpdateOrderPrice46: " + new Date());
         try {
             Long currentLotteyTime = ((System.currentTimeMillis() / 60000L) + 1L) * 60000L; // 推算当前开奖时间，60000 ms = 1分钟
             coinguessService.batchUpdateOrderPrice(currentLotteyTime);
         } catch (Exception e) {
             logger.error("猜币批量更新下单价格出错46 : " + e.getMessage());
-           // e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
-    @Scheduled(cron = "20 * * * * ?") //每到20整秒执行一次，1分20秒；2分20秒；3分20秒；4分20秒...
-    //定时开奖
-    public void batchLottery(){
+    @Scheduled(cron = "20 * * * * ?") // 每到20整秒执行一次，1分20秒；2分20秒；3分20秒；4分20秒...
+    // 定时开奖
+    public void batchLottery() {
         System.out.println("batchLottery: " + new Date());
         try {
             coinguessService.batchLottery(System.currentTimeMillis());
         } catch (Exception e) {
             logger.error("猜币定时开奖出错 : " + e.getMessage());
-            //e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
+    // 触发
+    @Scheduled(cron = "0 17 8 * * ?") // 每到20整秒执行一次，1分20秒；2分20秒；3分20秒；4分20秒...
+    public void trigger() {
+        Date etimeDate = DateUtil.diffDate(new Date(), 2);
+        String etime = DateUtil.format(etimeDate, DateUtil.YMD_DATE_PATTERN);
+        logger.info("task trigger ::: {}", etime);
+        try {
+            triggerService.triggerByEtime(etime);
+        } catch (Exception e) {
+            logger.error("温度合约触发错误: " + e.getMessage());
+        }
 
-    @Scheduled(cron = "30 * * * * ?") //每到30整秒执行一次，1分30秒；2分30秒；3分30秒；4分30秒...
-    //批量退款
-    public void batchRefund(){
+        try {
+            rainOrderTriggerService.triggerByEtime(etime);
+        } catch (Exception e) {
+            logger.error("降雨合约触发错误: " + e.getMessage());
+        }
+    }
+
+    @Scheduled(cron = "30 * * * * ?") // 每到30整秒执行一次，1分30秒；2分30秒；3分30秒；4分30秒...
+    // 批量退款
+    public void batchRefund() {
         System.out.println("batchRefund: " + new Date());
         try {
             coinguessService.batchRefund();
         } catch (Exception e) {
             logger.error("批量退款出错 : " + e.getMessage());
-            //e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -145,6 +171,11 @@ public class ScheduledTasks {
     // @Scheduled(cron = "0 0/1 * * * ?") //cron接受cron表达式，根据cron表达式确定定时规则
     // public void testCron() {
     // logger.info("===initialDelay: 第{}次执行方法", cronCount++);
+    // }
+
+    // public static void main(String[] args){
+    // Date etimeDate = DateUtil.diffDate(new Date(), 2);
+    // System.out.println(etimeDate);
     // }
 
 }

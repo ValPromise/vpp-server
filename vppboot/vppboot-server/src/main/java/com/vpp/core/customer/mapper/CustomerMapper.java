@@ -47,4 +47,13 @@ public interface CustomerMapper {
     Customer findByMobile(@Param("mobile") String mobile);
 
     Page<Customer> findListByCondition(Map<String, Object> params);
+
+    /**
+     * 根据注册时间查询用户数
+     * 
+     * @author Lxl
+     * @param params
+     * @return
+     */
+    Integer findCount(@Param("startGmtCreate") String startGmtCreate, @Param("endGmtCreate") String endGmtCreate);
 }

@@ -48,7 +48,7 @@ public class AppLoginController extends CommonController {
     /**
      * 邀请人数上限，修改邀请人数上限为5000 20180621
      */
-    public static final Integer INVITE_UP = 5000;
+    public static final Integer INVITE_UP = 30;
 
     /**
      * 获取手机验证码

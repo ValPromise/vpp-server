@@ -169,4 +169,14 @@ public interface ICustomerService {
      */
     Page<Customer> findListByCondition(Integer currentPage, Integer pageSize, Map<String, Object> params) throws Exception;
 
+    /**
+     * 根据注册时间查询用户数
+     * 
+     * @author Lxl
+     * @param startGmtCreate
+     * @param endGmtCreate
+     * @return
+     */
+    Integer findCount(String startGmtCreate, String endGmtCreate);
+
 }

@@ -2,8 +2,7 @@ package com.vpp.core.coinguess.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
+import java.util.Map;
 
 import com.github.pagehelper.Page;
 import com.vpp.core.coinguess.bean.Coinguess;
@@ -85,7 +84,8 @@ public interface ICoinguessService {
 
     /**
      * 批量更新下单价格（根据开奖时间）
-     * @param long lotteryTime开奖时间
+     * 
+     * @param Long lotteryTime开奖时间
      */
     void batchUpdateOrderPrice(Long lotteryTime);
 
@@ -94,7 +94,7 @@ public interface ICoinguessService {
      *
      * @param customerId
      * @param lotteryTime
-     * @return  BigDecimal
+     * @return BigDecimal
      */
     BigDecimal runTheLottery(Long customerId, String lotteryTime);
 
@@ -129,4 +129,23 @@ public interface ICoinguessService {
      */
     void batchRefund();
 
+    /**
+     * 根据条件查询订单数
+     * 
+     * @author Lxl
+     * @param startGmtCreate
+     * @param endGmtCreate
+     * @return
+     */
+    List<Map<String, Object>> findCount(String startGmtCreate, String endGmtCreate);
+
+    /**
+     * 根据条件查询赔付金额
+     * 
+     * @author Lxl
+     * @param startGmtCreate
+     * @param endGmtCreate
+     * @return
+     */
+    List<Map<String, Object>> findPayout(String startGmtCreate, String endGmtCreate);
 }

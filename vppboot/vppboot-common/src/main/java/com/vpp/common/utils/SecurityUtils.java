@@ -4,14 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * 鉴权工具类，加密规则：request中所有非空参数， 把参数数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串 +SECURITY_KEY，生成MD5加密字符串 存入request中sign字段
@@ -76,9 +75,35 @@ public class SecurityUtils {
         Map<String, String> sParaNew = paraFilter(params);
         // 获取待签名字符串
         String preSignStr = createLinkString(sParaNew);
+
         // 获得签名验证结果
         boolean isSign = verify(preSignStr, sign, SECURITY_KEY);
         return isSign;
+    }
+
+    /**
+     * VPP2.0加密验证
+     * 
+     * @author Lxl
+     * @param request
+     * @return
+     */
+    public static boolean checkVppAppSignVeryfy(HttpServletRequest request) {
+        // 验证time加密盐
+        String key = request.getParameter("key");
+        String _key = request.getParameter("_key");
+//        String local = DateUtil.format(new Date(), DateUtil.YMDH_DATE_PATTERN);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("time", _key);
+        if (StringUtils.isNotBlank(key)) {
+            String sign = getSign(params);
+            if (!sign.equals(key)) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -165,7 +190,7 @@ public class SecurityUtils {
      */
     private static String sign(String text, String key) {
         text = text + key;
-        return DigestUtils.md5Hex(getContentBytes(text));
+        return MD5Utils.getMD5String(getContentBytes(text));
     }
 
     /**
@@ -179,7 +204,7 @@ public class SecurityUtils {
      */
     private static boolean verify(String text, String sign, String key) {
         text = text + key;
-        String mysign = DigestUtils.md5Hex(getContentBytes(text));
+        String mysign = MD5Utils.getMD5String(getContentBytes(text));
         if (mysign.equals(sign)) {
             return true;
         } else {

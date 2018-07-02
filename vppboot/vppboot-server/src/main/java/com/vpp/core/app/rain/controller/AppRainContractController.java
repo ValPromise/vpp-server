@@ -1,13 +1,17 @@
 package com.vpp.core.app.rain.controller;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +22,8 @@ import com.vpp.common.vo.ResultVo;
 import com.vpp.core.common.CommonController;
 import com.vpp.core.standardized.order.bean.DataModelDto;
 import com.vpp.core.standardized.order.service.IContractService;
+import com.vpp.core.weather.bean.WeatherData;
+import com.vpp.core.weather.service.IWeatherService;
 import com.vpp.service.city.bean.CityInfo;
 import com.vpp.service.city.service.ICityService;
 
@@ -34,6 +40,19 @@ public class AppRainContractController extends CommonController {
     private IContractService contractService;
     @Autowired
     private ICityService cityService;
+    @Autowired
+    private IWeatherService weatherService;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 温度历史数据key
+     */
+    public static final String TEMP_HISTORY_KEY = "temp_history_";
+    /**
+     * 降雨历史数据key
+     */
+    public static final String RAIN_HISTORY_KEY = "rain_history_";
 
     /**
      * 根据城市ID查询合约
@@ -78,6 +97,40 @@ public class AppRainContractController extends CommonController {
         result.put("price", dataModelDto.getPrice());
         result.put("threshold", dataModelDto.getThreshold());
         result.put("maxBuyCount", ConstantsRain.MAX_BUY_COUNT);// 最大购买份数
+        result.put("history", this.rainHistory(cityId));
         return ResultVo.setResultSuccess(result);
+    }
+
+    /**
+     * 天气行情
+     * 
+     * @author Lxl
+     * @param cityId
+     * @return
+     */
+    private List<Map<String, Object>> rainHistory(String cityId) {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        try {
+            String key = RAIN_HISTORY_KEY + cityId;
+            // 缓存
+            if (redisTemplate.hasKey(key)) {
+                list = (List<Map<String, Object>>) redisTemplate.opsForValue().get(key);
+                return list;
+            }
+            Date eDate = DateUtil.getYesterday();
+            Date sDate = DateUtil.diffDate(eDate, 7);
+            List<String> dates = DateUtil.getDatesBetweenTwoDate(sDate, eDate, DateUtil.YMD_DATE_TIME_PATTERN);
+            for (String date : dates) {
+                WeatherData weatherData = weatherService.selectWeatherTemp(cityId, date);
+                Float maxPrcp = weatherData.getRealPrcp();
+                Map<String, Object> data = new HashMap<String, Object>();
+                data.put("type", date.substring(date.length() - 2));
+                data.put("value", maxPrcp);
+                list.add(data);
+            }
+            redisTemplate.opsForValue().set(RAIN_HISTORY_KEY + cityId, list, 1, TimeUnit.HOURS);
+        } catch (Exception e) {
+        }
+        return list;
     }
 }

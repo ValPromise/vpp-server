@@ -953,7 +953,7 @@ public class DateUtil {
         return d;
     }
 
-    private static Date getYesterday() {
+    public static Date getYesterday() {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, -1);
         return cal.getTime();
