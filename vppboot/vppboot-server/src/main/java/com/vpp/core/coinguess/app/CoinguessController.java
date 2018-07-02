@@ -68,7 +68,7 @@ public class CoinguessController extends CommonController {
 
         // 校验产品是否合法
         if (productCoinguess == null) {
-            return ResultVo.setResultError("产品: " + targetId + " 不存在");
+            return ResultVo.setResultError(getMessage("product_not_exist"), targetId);
         }
 
         if (!"1".equals(productCoinguess.getProductState().toString())) {
@@ -419,8 +419,4 @@ public class CoinguessController extends CommonController {
         return ResultVo.setResultSuccess(result);
     }
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 60ddcf2ee2006cc1a6f0b0d709f4984cae1fd8df
