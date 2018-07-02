@@ -675,5 +675,3 @@ class ActualPriceInfo {
     private String actual_lottery_time;
 
 }
-
-

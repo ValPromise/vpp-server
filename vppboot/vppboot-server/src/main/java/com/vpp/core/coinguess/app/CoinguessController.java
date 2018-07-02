@@ -419,4 +419,8 @@ public class CoinguessController extends CommonController {
         return ResultVo.setResultSuccess(result);
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 60ddcf2ee2006cc1a6f0b0d709f4984cae1fd8df
