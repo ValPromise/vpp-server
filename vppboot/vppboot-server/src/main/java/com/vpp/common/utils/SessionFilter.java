@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,6 +57,7 @@ public class SessionFilter implements Filter {
 
     @Value("${spring.profiles.active}")
     private String profilesActive;
+    public static final String TEST = "test";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -128,6 +130,14 @@ public class SessionFilter implements Filter {
 
             // 前端API鉴权
             if (uri.contains("/app/")) {
+                // if (!TEST.equals(active)) {// 测试环境不启用
+                // // 双向加密验证
+                // boolean boo = SecurityUtils.checkVppAppSignVeryfy(request);
+                // if (!boo) {
+                // this.printAppError(response);
+                // }
+                // }
+
                 List<String> appPassList = new ArrayList<String>();
                 appPassList.add("/app/getMobileCode");
                 appPassList.add("/app/register");
@@ -136,6 +146,7 @@ public class SessionFilter implements Filter {
                 appPassList.add("/app/customer/updatePassword");
                 appPassList.add("/app/customer/forgetPassword");
                 appPassList.add("/app/country/getCountryList");
+                appPassList.add("/app/version/checkVersion");
                 if (!appPassList.contains(uri)) {
                     String token = request.getParameter("token");
                     appLoginUtils = (AppLoginUtils) factory.getBean("appLoginUtils");
