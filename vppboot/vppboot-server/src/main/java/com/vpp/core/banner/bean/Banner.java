@@ -21,6 +21,10 @@ public class Banner {
 
     private Byte state;
 
+    private String linkurlen;
+
+    private String imgurlen;
+
     public Long getId() {
         return id;
     }
@@ -91,5 +95,21 @@ public class Banner {
 
     public void setState(Byte state) {
         this.state = state;
+    }
+
+    public String getLinkurlen() {
+        return linkurlen;
+    }
+
+    public void setLinkurlen(String linkurlen) {
+        this.linkurlen = linkurlen == null ? null : linkurlen.trim();
+    }
+
+    public String getImgurlen() {
+        return imgurlen;
+    }
+
+    public void setImgurlen(String imgurlen) {
+        this.imgurlen = imgurlen == null ? null : imgurlen.trim();
     }
 }
