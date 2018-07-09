@@ -3,6 +3,7 @@ package com.vpp.core.coinguess.app;
 import static com.vpp.common.utils.StringUtils.isPureDigital;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -68,11 +69,11 @@ public class CoinguessController extends CommonController {
 
         // 校验产品是否合法
         if (productCoinguess == null) {
-            return ResultVo.setResultError(getMessage("product_not_exist"), targetId);
+            return ResultVo.setResultError(MessageFormat.format(getMessage("product_not_exist"), targetId)); //"产品: " + targetId + " 不存在"
         }
 
         if (!"1".equals(productCoinguess.getProductState().toString())) {
-            return ResultVo.setResultError("产品: " + targetId + " 未启用");
+            return ResultVo.setResultError(MessageFormat.format(getMessage("product_not_active"), targetId)); //("产品: " + targetId + " 未启用");
         }
 
         // 客户号
@@ -92,13 +93,13 @@ public class CoinguessController extends CommonController {
 
         // 下单金额
         if (orderAmt == null) {
-            return ResultVo.setResultError("下单金额必输");
+            return ResultVo.setResultError(getMessage("order_amt_must_input")); //"下单金额必输"
         }
 
         if (orderAmt.compareTo(productCoinguess.getMinBet()) < 0) {
-            return ResultVo.setResultError("下单金额必须 >= " + productCoinguess.getMinBet());
+            return ResultVo.setResultError(MessageFormat.format(getMessage("order_amt_should_great_then"), productCoinguess.getMinBet()));  //"下单金额必须 >= " + productCoinguess.getMinBet()
         } else if (orderAmt.compareTo(productCoinguess.getMaxBet()) > 0) {
-            return ResultVo.setResultError("下单金额必须 <= " + productCoinguess.getMaxBet());
+            return ResultVo.setResultError(MessageFormat.format(getMessage("order_amt_should_less_then"), productCoinguess.getMaxBet())); //"下单金额必须 <= " + productCoinguess.getMaxBet())
         } else {
             coinguess.setOrderAmt(orderAmt);
         }
@@ -106,7 +107,7 @@ public class CoinguessController extends CommonController {
         // 竞猜方向
 
         if (!"0".equals(orderDir) && !"1".equals(orderDir)) {
-            return ResultVo.setResultError("竞猜方向不合法（合法值为0-猜涨，1-猜跌）");
+            return ResultVo.setResultError(getMessage("invalid_order_dir")); //"竞猜方向不合法（合法值为0-猜涨，1-猜跌）");
         } else {
             coinguess.setOrderDir(Integer.valueOf(orderDir));
         }
@@ -116,13 +117,13 @@ public class CoinguessController extends CommonController {
         try {
             orderTsLong = Long.parseLong(orderTs);
         } catch (NumberFormatException e) {
-            return ResultVo.setResultError("时间戳未输入或非法");
+            return ResultVo.setResultError(getMessage("invalid_order_timestamp")); //"时间戳未输入或非法");
         }
 
         System.out.println("订单号：" + coinguess.getOrderId() + "系统时间:" + DateUtil.unixTimestampToTimestamp(startTimestamp + "") + "订单时间:" + DateUtil.unixTimestampToTimestamp(orderTs) + "相差：" + (startTimestamp - orderTsLong));
 
         if (isPureDigital(orderTs) == false) {
-            return ResultVo.setResultError("下单时间戳必须为正整数，毫秒unix时间戳");
+            return ResultVo.setResultError(getMessage("timestamp_shoud_be_valid_unix_ts")); //"下单时间戳必须为正整数，毫秒unix时间戳");
         }
 //        // todo: 测试时放到30秒，系统上线放到15秒
         else if (orderTsLong < startTimestamp - 15000L || orderTsLong > startTimestamp + 15000L) { // 下单时间在系统时间正负20秒(20000毫秒）内
@@ -142,7 +143,7 @@ public class CoinguessController extends CommonController {
         // 有合约所有者则检查合约所有者是否能足额赔付, 不能赔付时不接受订单
         if (contractOwnerId != 0 && contractOwnerId != null) {
             if (contractOwner.getBalance().compareTo(coinguess.getProfit()) < 0) {
-                return ResultVo.setResultError("下单金额过大，赔付保证金不足");
+                return ResultVo.setResultError(getMessage("margin_money_not_enough")); //"下单金额过大，赔付保证金不足";
             }
         }
 
@@ -162,7 +163,7 @@ public class CoinguessController extends CommonController {
         // 风控：单人单期最多下N单， N = productCoinguess.getOrderAllowed()，数据库字段product_coinguess.order_allowed
 
         if(coinguessService.getTotalOrders(coinguess.getCustomerId(),lotteryTime) >= productCoinguess.getOrderAllowed()){
-            return ResultVo.setResultError("每期限下" + productCoinguess.getOrderAllowed() + "单");
+            return ResultVo.setResultError(MessageFormat.format(getMessage("order_num_limit"),productCoinguess.getOrderAllowed())); //"每期限下" + productCoinguess.getOrderAllowed() + "单");
         }
 
         // 单期下单金额汇总
@@ -171,7 +172,7 @@ public class CoinguessController extends CommonController {
         BigDecimal maxBetWithinOneTerm = productCoinguess.getSingleTermLimit();
 
         if(maxBetWithinOneTerm.compareTo(BigDecimal.ZERO) == 0){
-            return ResultVo.setResultError("单期系统接受的订单已经超过上限金额：" + 20000 + " 请在下期下单");
+            return ResultVo.setResultError(MessageFormat.format(getMessage("total_order_amt_limit"),20000)); //"单期系统接受的订单已经超过上限金额：" + 20000 + " 请在下期下单");
         }
 
 
@@ -180,7 +181,7 @@ public class CoinguessController extends CommonController {
                 maxBetWithinOneTerm != null && // maxBetWithinOneTerm 为非空
                 !(maxBetWithinOneTerm.compareTo(BigDecimal.ZERO) == 0) && // maxBetWithinOneTerm 不为0
                 orderAmt.compareTo(maxBetWithinOneTerm) > 0) { // 下单金额超上限
-            return ResultVo.setResultError("单期系统接受的订单已经超过上限金额：" + maxBetWithinOneTerm + " 请在下期下单");
+            return ResultVo.setResultError(MessageFormat.format(getMessage("total_order_amt_limit"),maxBetWithinOneTerm)); //"单期系统接受的订单已经超过上限金额：" + maxBetWithinOneTerm + " 请在下期下单");
         }
 
         // 风控：当期后续订单判断，历史下单金额 + 新下单金额 不能超过maxBetWithinOneTerm金额
@@ -189,7 +190,7 @@ public class CoinguessController extends CommonController {
                 !(maxBetWithinOneTerm.compareTo(BigDecimal.ZERO) == 0) && // maxBetWithinOneTerm 不为0
                 totalOrderAmtInOneTerm.add(orderAmt).compareTo(maxBetWithinOneTerm) > 0) { // 单期下注汇金额 + 本次投注金额 超过
             // 系统允许的总金额，该期不接受新订单
-            return ResultVo.setResultError("单期系统接受的订单已经超过上限金额：" + maxBetWithinOneTerm + " 请在下期下单");
+            return ResultVo.setResultError(MessageFormat.format(getMessage("total_order_amt_limit"),maxBetWithinOneTerm)); //"单期系统接受的订单已经超过上限金额：" + maxBetWithinOneTerm + " 请在下期下单");
         }
 
         // 订单状态：0-待开奖，1-输，2-赢
@@ -212,7 +213,7 @@ public class CoinguessController extends CommonController {
         // }
 
         if (customer.getBalance().compareTo(orderAmt) < 0) {
-            return ResultVo.setResultError("账户余额不足，请充值！");
+            return ResultVo.setResultError(getMessage("insufficient_balance")); //"账户余额不足，请充值！");
         }
         // // 插入记录
         // if (coinguessService.checkOrderExistence(coinguess.getCustomerId(),coinguess.getOrderTs()) == 1){
@@ -278,28 +279,28 @@ public class CoinguessController extends CommonController {
             CoinguessOrderListVo vo = new CoinguessOrderListVo();
             vo.setInnerOrderId(cc.getOrderId());
             vo.setTitle(cc.getTargetId());
-            String content = 0 == cc.getOrderDir() ? "看涨" : "看跌";
+            String content = 0 == cc.getOrderDir() ? getMessage("bullish"):getMessage("bearish"); //"看涨" : "看跌";
             vo.setContent(content);
             vo.setGmtCreate(DateUtil.removeS(cc.getGmtCreate()));
-            // int status =
-            Integer status = 0;
+            String status = "";
             String statusString = "";
             String payout = "0";
 
             if (0 == cc.getStatus()) {
-                statusString = "等待判定";
+                statusString = getMessage("waiting_for_judge"); //"等待判定";
             } else if (1 == cc.getStatus()) {
-                statusString = "已判定，无需履行";
+                statusString = getMessage("lose"); //"已判定，无需履行";
             } else if (2 == cc.getStatus()){
                 payout = cc.getProfit().toString();
-                statusString = "已判定，已履行";
+                statusString = getMessage("win"); //"已判定，已履行";
             } else{
-                statusString = "网络故障，已退款";
+                statusString = getMessage("refund"); //"网络故障，已退款";
             }
 
             vo.setAmount(cc.getOrderAmt().toString() + "-" + payout);
 
-            vo.setStatus(statusString);
+            vo.setStatusString(statusString);
+            vo.setStatus(cc.getStatus().toString());
             voList.add(vo);
         }
         return voList;
@@ -310,12 +311,12 @@ public class CoinguessController extends CommonController {
     public ResultVo coinguessDetail(String token, String orderId, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         if (orderId == null) {
-            return ResultVo.setResultError("id必输");
+            return ResultVo.setResultError(getMessage("id_must_input")); //"id必输");
         }
 
         Coinguess coinguess = coinguessService.selectCoinguessOrderByOrderId(orderId);
         if (coinguess == null) {
-            return ResultVo.setResultError("未查询到订单详情");
+            return ResultVo.setResultError(getMessage("no_order_detail")); //"未查询到订单详情");
         } else {
             // 时间戳毫秒变为秒再返回
             coinguess.setOrderTs(coinguess.getOrderTs().substring(0, 19));
@@ -408,7 +409,7 @@ public class CoinguessController extends CommonController {
         BigDecimal totalWin = coinguessService.runTheLottery(getCustomerId(token), realLotteryTime.toString());
 
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("msg","本期您收益为 " + totalWin.toString() + " VPP");
+        result.put("msg",MessageFormat.format(getMessage("total_profit_in_one_term"),totalWin.toString())); //"本期您收益为 " + totalWin.toString() + " VPP");
 
         result.put("lotteryTime", lotteryTime );
         //result.put("totalOrderAmt", totalOrderAmt.toString() );
