@@ -11,6 +11,9 @@ package com.vpp.common.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.vpp.common.vo.AppOrderInfoVo;
 import com.vpp.common.vo.AppOrderListVo;
 import com.vpp.common.vo.OrderInfoVo;
@@ -22,7 +25,12 @@ import com.vpp.core.standardized.trigger.OrderTrigger;
  * @author Lxl
  * @version V1.0 2018年5月26日
  */
+@Component
 public class AppUtils {
+
+    @Autowired
+    private MessageSourceUtils messageSourceUtils;
+
     /**
      * 封装app合约列表对象
      * 
@@ -31,47 +39,38 @@ public class AppUtils {
      * @return
      * @throws Exception
      */
-    public static List<AppOrderListVo> getAppVoList(List<OrderInfoVo> orders) throws Exception {
+    public List<AppOrderListVo> getAppVoList(List<OrderInfoVo> orders) throws Exception {
         List<AppOrderListVo> vos = new ArrayList<AppOrderListVo>();
         for (OrderInfoVo vo : orders) {
-            String cityCnName = vo.getCityCnName();
+
+            String cityName = this.getCityNameI18n(vo);
             String st = DateUtil.strToStr(vo.getStime(), DateUtil.LONG_DATE_TIME_PATTERN, "MMdd");
 
-            String weatherName = WeatherUtils.getSymbolChinese(vo.getWeatherType());
+            String weatherName = WeatherUtils.getSymbolI18n(vo.getWeatherType());
             String symbol = OpTypeUtils.getSymbol(vo.getOpType());
             String threshold = vo.getThreshold().toString();
             String unit = WeatherUtils.getUnit(vo.getWeatherType());
 
-            String title = cityCnName + st;
+            String title = cityName + st;
             String content = weatherName + symbol + threshold + unit;
             String amount = vo.getPayFee().floatValue() + "-" + vo.getMaxPayout().floatValue();
 
-            String status = "";
-            if (vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES) {
-                if (null != vo.getPayoutFee() && 0 < vo.getPayoutFee().intValue()) {
-                    status = "已判定，已履行";
-                } else {
-                    status = "已判定，无需履行";
-                }
-            } else {
-                status = "等待判定";
-            }
-
             AppOrderListVo appListVo = new AppOrderListVo();
+            this.putTriggerStateI18nList(vo, appListVo);
+
             appListVo.setInnerOrderId(vo.getInnerOrderId());
             appListVo.setTitle(title);
             appListVo.setGmtCreate(vo.getGmtCreate());
             appListVo.setContent(content);
             appListVo.setAmount(amount);
-            appListVo.setStatus(status);
             vos.add(appListVo);
         }
         return vos;
     }
 
-    public static AppOrderInfoVo getAppVo(OrderInfoVo vo, OrderTrigger orderTrigger) throws Exception {
-        String cityCnName = vo.getCityCnName();
-        String weatherName = WeatherUtils.getSymbolChinese(vo.getWeatherType());
+    public AppOrderInfoVo getAppVo(OrderInfoVo vo, OrderTrigger orderTrigger) throws Exception {
+        String cityName = this.getCityNameI18n(vo);
+        String weatherName = WeatherUtils.getSymbolI18n(vo.getWeatherType());
         String symbol = OpTypeUtils.getSymbol(vo.getOpType());
         String threshold = vo.getThreshold().toString();
         String unit = WeatherUtils.getUnit(vo.getWeatherType());
@@ -80,25 +79,16 @@ public class AppUtils {
         if (null != orderTrigger) {
             Float realWeather = orderTrigger.getNmcWeatherValue() != null ? orderTrigger.getNmcWeatherValue()
                     : orderTrigger.getCmaWeatherValue();
-            weatherContent = weatherName + "为" + realWeather + unit;
+            weatherContent = weatherName + " " + realWeather + unit;
         }
-
-        String status = "";
-        if (vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES) {
-            if (null != vo.getPayoutFee() && 0 < vo.getPayoutFee().intValue()) {
-                status = "已判定，已履行";
-            } else {
-                status = "已判定，无需履行";
-            }
-        } else {
-            status = "等待判定";
-        }
+        // 状态 0：等待判定，1：输，2：赢，3：退款
 
         AppOrderInfoVo appVo = new AppOrderInfoVo();
+        this.putTriggerStateI18n(vo, appVo);
+
         appVo.setInnerOrderId(vo.getInnerOrderId());
         appVo.setGmtCreate(vo.getGmtCreate());
-        appVo.setStatus(status);
-        appVo.setCityName(cityCnName);
+        appVo.setCityName(cityName);
         appVo.setStime(vo.getStime().substring(0, 10));
         appVo.setContractContent(contractContent);
         appVo.setWeatherContent(weatherContent);
@@ -110,7 +100,66 @@ public class AppUtils {
         return appVo;
     }
 
-    // public static void main(String[] args) {
-    // System.out.println("aabbcc".substring(0, 2));
-    // }
+    /**
+     * 订单状态 0：等待判定
+     */
+    public static final Byte ORDER_STATUS_PENDING = 0;
+    /**
+     * 订单状态 1：输
+     */
+    public static final Byte ORDER_STATUS_LOSE = 1;
+    /**
+     * 订单状态 2：赢
+     */
+    public static final Byte ORDER_STATUS_WIN = 2;
+    /**
+     * 订单状态 3：退款
+     */
+    public static final Byte ORDER_STATUS_REFUND = 3;
+
+    private void putTriggerStateI18n(OrderInfoVo vo, AppOrderInfoVo appVo) {
+        String statusString = "";
+        String status = "";
+        if (vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES) {
+            if (null != vo.getPayoutFee() && 0 < vo.getPayoutFee().intValue()) {
+                statusString = messageSourceUtils.getMessage("trigger_status_success_payment");
+                status = ORDER_STATUS_WIN.toString();
+            } else {
+                statusString = messageSourceUtils.getMessage("trigger_status_success_nopayment");
+                status = ORDER_STATUS_LOSE.toString();
+            }
+        } else {
+            statusString = messageSourceUtils.getMessage("trigger_status_pending");
+            status = ORDER_STATUS_PENDING.toString();
+        }
+        appVo.setStatus(status);
+        appVo.setStatusString(statusString);
+    }
+
+    private void putTriggerStateI18nList(OrderInfoVo vo, AppOrderListVo appVo) {
+        String statusString = "";
+        String status = "";
+        if (vo.getTriggerCheckState().intValue() == ConstantsOrder.TRIGGER_CHECK_STATE_YES) {
+            if (null != vo.getPayoutFee() && 0 < vo.getPayoutFee().intValue()) {
+                statusString = messageSourceUtils.getMessage("trigger_status_success_payment");
+                status = ORDER_STATUS_WIN.toString();
+            } else {
+                statusString = messageSourceUtils.getMessage("trigger_status_success_nopayment");
+                status = ORDER_STATUS_LOSE.toString();
+            }
+        } else {
+            statusString = messageSourceUtils.getMessage("trigger_status_pending");
+            status = ORDER_STATUS_PENDING.toString();
+        }
+        appVo.setStatus(status);
+        appVo.setStatusString(statusString);
+    }
+
+    public String getCityNameI18n(OrderInfoVo vo) {
+        if (LocaleUtils.isEn()) {
+            return vo.getCityEnName();
+        } else {
+            return vo.getCityCnName();
+        }
+    }
 }
